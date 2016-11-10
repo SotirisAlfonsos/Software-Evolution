@@ -1,4 +1,4 @@
-module JavaMetrics::LineCount
+module JavaMetrics::Volume
 
 import IO;
 import Prelude;
