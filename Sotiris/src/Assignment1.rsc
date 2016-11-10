@@ -29,17 +29,19 @@ public void Volume_calc() {
 
 public int countInLine1(str S){
   int count=0;
-  if ( /\/\*+/ := S) {
+  if ( /^[\t\n\r\ ]*\/\*+/ := S) {
   		count = 0;
   		counterInsideComment = 1;
-  } else if ( /\*+\/+/ := S) {
+  } else if ( /\*+\/+/ := S && counterInsideComment == 1) {
   		count = 0;
   		counterInsideComment = 0;
-  } else if ( /\/+\/+/ := S ) {
+  } else if ( /^[\t\n\r\ ]*\/+\/+/ := S ) {
   		count = 0;
   }else if (counterInsideComment == 0) {
+  		if ( /[\t\n\r\ ]*\/\*+/ := S) {
+  			counterInsideComment = 1;
+  		}
   		if ( !(/^[\t\n\r\ ]*$/ := S) ) {
-	  		//println(S);
 	  		count = 1;
   		}
   }
