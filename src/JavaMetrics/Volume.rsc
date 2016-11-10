@@ -5,6 +5,28 @@ import Prelude;
 import lang::java::jdt::m3::Core;
 import lang::java::m3::AST;
 
+int countCommentsInLocation(loc project){
+	M3 model = createM3FromEclipseProject(project);
+	list[loc] classes = toList(classes(model));
+	int numberOfLines = 0;
+	for(c <- classes){
+		src = readFileLines(c);
+		numberOfLines += getSingleComments(src) + getMultiComments(src);
+	}
+	return numberOfLines;
+}
+
+int countSourceLinesInLocation(loc project){
+	M3 model = createM3FromEclipseProject(project);
+	list[loc] classes = toList(classes(model));
+	int numberOfLines = 0;
+	for(c <- classes){
+		src = readFileLines(c);
+		numberOfLines += countSourceLines(src);
+	}
+	return numberOfLines;
+}
+
 int countLinesInLocation(loc project){
 	M3 model = createM3FromEclipseProject(project);
 	list[loc] classes = toList(classes(model));
@@ -16,7 +38,7 @@ int countLinesInLocation(loc project){
 	return numberOfLines;
 }
 
-int countLines(list[str] src){
+int countSourceLines(list[str] src){
 	list[str] blanks = [line | line <- src, /^\s*$/ := line];
 	list[str] comments = getSingleComments(src) + getMultiComments(src);
 	return size(src) - size(blanks) - size(comments);	
