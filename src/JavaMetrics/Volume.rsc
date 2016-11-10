@@ -5,7 +5,7 @@ import Prelude;
 import lang::java::jdt::m3::Core;
 import lang::java::m3::AST;
 
-int countCommentsInLocation(loc project){
+int countCommentsInProject(loc project){
 	M3 model = createM3FromEclipseProject(project);
 	list[loc] classes = toList(classes(model));
 	int numberOfLines = 0;
@@ -16,7 +16,7 @@ int countCommentsInLocation(loc project){
 	return numberOfLines;
 }
 
-int countSourceLinesInLocation(loc project){
+int countSourceLinesInProject(loc project){
 	M3 model = createM3FromEclipseProject(project);
 	list[loc] classes = toList(classes(model));
 	int numberOfLines = 0;
@@ -27,7 +27,7 @@ int countSourceLinesInLocation(loc project){
 	return numberOfLines;
 }
 
-int countLinesInLocation(loc project){
+int countLinesInProject(loc project){
 	M3 model = createM3FromEclipseProject(project);
 	list[loc] classes = toList(classes(model));
 	int numberOfLines = 0;
