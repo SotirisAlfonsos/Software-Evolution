@@ -76,9 +76,8 @@ loc getEndOfLine(loc line){
 	// ugly way by fetching the whole file
 	loc file = |<line.scheme>://<line.authority><line.path>|;
 	list[str] lines = readFileLines(file);
-	str offsetLines = intercalate("  ", lines[0..line.end.line - 1]);
 	str src = lines[line.end.line - 1]; // line numbers start at 1
-	int offset = size(offsetLines) + line.end.column + 2;
+	int offset = line.offset + line.length;
 	return line(offset, size(src) - line.end.column);
 }
 
