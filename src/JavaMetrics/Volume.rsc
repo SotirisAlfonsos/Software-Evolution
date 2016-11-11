@@ -16,6 +16,72 @@ rel[loc, int] countSourceLinesPerMethod(loc project){
 	return methodCounts;
 }
 
+int countLinesInProject(loc project){
+	M3 model = createM3FromEclipseProject(project);
+	set[loc] files = files(model);
+	return sum(mapper(files, countLinesInFile));
+}
+
+int countLinesInFile(loc file){
+	// remember which lines are already looked at (multiple comments per line) !!
+	str single = "//";
+	str blockStart = "/*";
+	str blockEnd = "*/";
+	
+	// filter blank ( lines
+	int total = size([l | l <- readFileLines(file), !(/^\s*$/ := l)]);
+	int commentCount = 0;
+	
+	M3 model = createM3FromFile(file);
+	rel[loc definition, loc comments] docs = model@documentation;
+	set[int] commentLines = {};
+	set[int] codeLines = {};
+	
+	for(<_, cloc> <- docs){
+		bool isSingle = /^<single>/ := readFile(cloc);
+		bool startOfLine = cloc.begin.column == 0;
+		loc beginLine = getStartOfLine(cloc);
+		str beginSrc = trim(readFile(beginLine)); 
+		
+		if(startOfLine || (/^<blockStart>/ := beginSrc) || (/^<single>/ := beginSrc) || beginSrc == ""){
+			commentLines += cloc.begin.line;
+		}
+		if(isSingle) continue;
+		// else it's a block comment
+		
+		loc endLine = getEndOfLine(cloc);
+		str endSrc = trim(readFile(endLine));
+		
+		// add comment body
+		// don't count first and last line
+		if(cloc.begin.line != cloc.end.line){
+			commentLines += { l | l <- [cloc.begin.line + 1 .. cloc.end.line] };
+		}
+		
+		if((/^<blockStart>/ := endSrc) || (/^<single>/ := endSrc) || "" == endSrc){
+			commentLines += cloc.end.line;
+		} else {
+			codeLines += cloc.end.line;
+		}
+	}
+	return total - size(commentLines - codeLines);
+}
+
+loc getStartOfLine(loc line){
+	int bc = line.begin.column;
+	return line(line.offset - bc, bc);
+}
+
+loc getEndOfLine(loc line){
+	// ugly way by fetching the whole file
+	loc file = |<line.scheme>://<line.authority><line.path>|;
+	list[str] lines = readFileLines(file);
+	str offsetLines = intercalate("  ", lines[0..line.end.line - 1]);
+	str src = lines[line.end.line - 1]; // line numbers start at 1
+	int offset = size(offsetLines) + line.end.column + 2;
+	return line(offset, size(src) - line.end.column);
+}
+
 int countCommentsInProject(loc project){
 	M3 model = createM3FromEclipseProject(project);
 	list[loc] classes = toList(classes(model));
@@ -78,8 +144,13 @@ list[str] getBlockComments(list[str] src){
 			inBlock = false;
 			continue;
 		}
+		// already in block OR block start symbol
 		inBlock = inBlock || /<blockStart>/ := endParts[-1];
+		
+		// already in block and no end block symbol after a start symbol
 		inBlock = inBlock && !(/<blockEnd>/ := startParts[-1]);
+		
+		// 
 		if(inBlock || (/^<blockStart>/ := line && (/<blockEnd>$/ := line || isSingleComment(endParts[-1])))){
 			append line;
 		}
@@ -110,27 +181,3 @@ list[str] getAllComments(list[str] src){
 }
 
 bool isSingleComment(str l, str single="//") = /^<single>/ := trim(l);
-
-str stringConcat([], str _) = "";
-str stringConcat([str x, *str xs], str delim) = x + delim + stringConcat(xs, delim);
-
-void debug(){
-	loc mainClass = |project://MetricTest/src/Main.java|;
-	list[str] srcLines = readFileLines(mainClass);
-	//println(getSingleComments(srcLines));
-	println(stringConcat(getAllComments(srcLines), "\r\n"));
-}
-
-void debug2(){
-	line = "/* test */";
-	str blockStart = "/*";
-	str blockEnd = "*/";
-	str single = "//";
-	list[str] startParts = split(blockStart, line);
-	list[str] endParts = split(blockEnd, line);
-	println(startParts);
-	println(endParts);
-	println(/^<blockStart>/ := line);
-	println(/<blockEnd>$/ := line);
-	println(isSingleComment(endParts[-1]));
-}
