@@ -28,7 +28,7 @@ int countLinesInFile(loc file){
 	str blockStart = "/*";
 	str blockEnd = "*/";
 	
-	// filter blank ( lines
+	// filter blank lines
 	int total = size([l | l <- readFileLines(file), !(/^\s*$/ := l)]);
 	int commentCount = 0;
 	
@@ -36,31 +36,32 @@ int countLinesInFile(loc file){
 	rel[loc definition, loc comments] docs = model@documentation;
 	set[int] commentLines = {};
 	set[int] codeLines = {};
-	
+
 	for(<_, cloc> <- docs){
 		bool isSingle = /^<single>/ := readFile(cloc);
-		bool startOfLine = cloc.begin.column == 0;
 		loc beginLine = getStartOfLine(cloc);
-		str beginSrc = trim(readFile(beginLine)); 
-		
-		if(startOfLine || (/^<blockStart>/ := beginSrc) || (/^<single>/ := beginSrc) || beginSrc == ""){
+		str beginSrc = readFile(beginLine);
+
+		// no code before comment
+		// any code behind block comments is checked below
+		if(/^\s*$/ := beginSrc){
 			commentLines += cloc.begin.line;
 		}
 		if(isSingle) continue;
-		// else it's a block comment
+		// else it's a block comment, so check the remainder of the region
 		
 		loc endLine = getEndOfLine(cloc);
 		str endSrc = trim(readFile(endLine));
 		
-		// add comment body
+		// add comment body (no code inside a block comment)
 		// don't count first and last line
 		if(cloc.begin.line != cloc.end.line){
 			commentLines += { l | l <- [cloc.begin.line + 1 .. cloc.end.line] };
 		}
 		
-		if((/^<blockStart>/ := endSrc) || (/^<single>/ := endSrc) || "" == endSrc){
+		if((/^<blockStart>/ := endSrc) || (/^<single>/ := endSrc) || endSrc == ""){
 			commentLines += cloc.end.line;
-		} else {
+		} else { // Line actually contains code.
 			codeLines += cloc.end.line;
 		}
 	}
