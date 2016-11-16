@@ -1,11 +1,26 @@
 module JavaMetrics::CyclomaticComplexity
 
 import lang::java::jdt::m3::Core;
-import lang::java::m3::AST;
- 
+import lang::java::jdt::m3::AST;
 import Prelude;
+import util::ValueUI;
 
-public int calculateCc(Declaration d){
+rel[loc, int] calculateUnitComplexity(loc project){
+	M3 projectModel = createM3FromEclipseProject(project);
+	rel[loc, int] complexities = {};
+	
+	for(f <- files(projectModel)){
+		classAst = createAstFromFile(f, true);
+		println(classAst@src);
+		visit(classAst){
+			 case x:\method(_,_,_,_): complexities += <x@src, calculateComplexity(x)>;
+			 case x:\method(_,_,_,_,_): complexities += <x@src, calculateComplexity(x)>;
+		}
+	}
+	return complexities;
+}
+
+int calculateComplexity(Declaration d){
 	// Borrowed from Landman et al. 
 	// Empirical analysis of the relationship between CC and
 	// SLOC in a large corpus of Java methods and C functions)
@@ -33,13 +48,5 @@ public int calculateCc(Declaration d){
 
 
 public void example(){
-	m = createM3FromEclipseProject(|project://MetricTest|);
-	cs = toList(classes(m));
-	for(c <- cs){
-		classAst = createAstFromFile(c, true);
-		visit(classAst){
-			case x:\method(_, str name, _, _): println("<name>, <calculateCc(x)>");
-			case x:\method(_, str name, _, _,_): println("<name>, <calculateCc(x)>");
-		}
-	}
+	text(sort(calculateUnitComplexity(|project://smallsql0.21_src|), bool(a, b){ return a[1] < b[1]; }));
 }
