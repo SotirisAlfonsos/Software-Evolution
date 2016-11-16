@@ -6,6 +6,9 @@ import lang::java::m3::AST;
 import Prelude;
 
 public int calculateCc(Declaration d){
+	// Borrowed from Landman et al. 
+	// Empirical analysis of the relationship between CC and
+	// SLOC in a large corpus of Java methods and C functions)
 	int result = 1;
 	visit(d){
 		case \case(_): result += 1;
@@ -21,12 +24,15 @@ public int calculateCc(Declaration d){
 		
 		case \do(_,_): result += 1;
 		case \while(_,_): result += 1;
+		
+		case infix(_, "&&", _): result += 1;
+		case infix(_, "||", _): result += 1;
 	}
 	return result;
 }
 
 
-public void debug(){
+public void example(){
 	m = createM3FromEclipseProject(|project://MetricTest|);
 	cs = toList(classes(m));
 	for(c <- cs){
