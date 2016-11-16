@@ -23,7 +23,7 @@ rel[loc, int] calculateUnitComplexity(loc project){
 int calculateComplexity(Declaration d){
 	// Borrowed from Landman et al. 
 	// Empirical analysis of the relationship between CC and
-	// SLOC in a large corpus of Java methods and C functions)
+	// SLOC in a large corpus of Java methods and C functions
 	int result = 1;
 	visit(d){
 		case \case(_): result += 1;
