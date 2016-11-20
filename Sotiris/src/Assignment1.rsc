@@ -22,8 +22,8 @@ public void main() {
 	int totalLinesOfCode = Volume_calc(myModel);
 	set[tuple[str,str]] cyclomaticComplexitySet = Cyclomatic_Complexity(myModel);
 	set[tuple[str,int]] unitSizeSet = Unit_size(myModel);
-	int duplication = Code_DuplicationV2();
-	calcRisks(totalLinesOfCode, cyclomaticComplexitySet, unitSizeSet, duplication);
+	//int duplication = Code_DuplicationV2();
+	//calcRisks(totalLinesOfCode, cyclomaticComplexitySet, unitSizeSet, duplication);
 	
 	println (size(filesinstr));
 	//println (totalLinesOfCode);
@@ -133,8 +133,8 @@ public set[tuple[str,str]] Cyclomatic_Complexity(myModel) {
 			}
 			
 			str risk = calcRisk(baseNumCC);
-			//if (risk=="highly unstable method")
-			 //println("<i.path> <baseNumCC>");
+			if (risk=="highly unstable method")
+			 println("<i.path> <baseNumCC>");
 			//tuple with the name of the function and the calculated cc
 			cc = cc + <i.path,risk>;
 			
@@ -268,12 +268,9 @@ public int Code_DuplicationV2() {
 		if (/\}/ := filesinstr[i]);
 		else { 
 			int tempfstposition = indexOf(filesinstr[(i+1)..], filesinstr[i]);
-			//int templstposition = lastIndexOf(filesinstr[(i+1)..], filesinstr[i]);
 			
 			if (tempfstposition != -1) fstposition = i+1+tempfstposition;
 			else fstposition=-1;
-			//if (templstposition != -1) lstposition = i+1+templstposition;
-			//else lstposition=-1;
 			
 			if (fstposition!=-1 && fstposition < size(filesinstr)-1) {
 			
@@ -295,7 +292,7 @@ public int Code_DuplicationV2() {
 						
 						endstri=temp-1;
 						endstry=temp2-1;
-						int flagDup=0;
+						/*int flagDup=0;
 						int flagDup2=0;
 						if (possibleDuplicate==6){
 												 
@@ -306,7 +303,7 @@ public int Code_DuplicationV2() {
 							}
 							if (flagDup==1 && flagDup2==1);
 							else duplication=duplication+1;
-						}
+						}*/
 						if (temp==size(filesinstr) || temp2==size(filesinstr)) break;
 						
 					}
@@ -320,6 +317,8 @@ public int Code_DuplicationV2() {
 							
 						}
 						if (flagDup==1 && flagDup2==1);
+						else if (flagDup==1) duplicatedparts=duplicatedparts+<startstry,endstry>;
+						else if (flagDup2==1) duplicatedparts=duplicatedparts+<startstri,endstri>;
 						else duplicatedparts=duplicatedparts+<startstri,endstri>+<startstry,endstry>;
 					}
 					possibleDuplicate=0;
