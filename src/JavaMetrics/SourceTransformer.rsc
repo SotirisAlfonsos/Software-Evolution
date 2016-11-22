@@ -8,6 +8,9 @@ list[str] splitLines(str source) = split("\n", source);
 str concatLines(list[str] source) = intercalate("\n", source);
 list[str] filterBlankLines(list[str] source) = [l | l <- source, !(/^\s*$/ := l)];
 
+list[str] simpleChars = split(" ", "{ } ( ) [ ]");
+list[str] removeSimpleLines(list[str] source) = [ l | l <- source, !(/^[<simpleChars>]$/ := trim(l)) ];
+
 str removeComments(loc file){
 	str src = readFile(file);
 	M3 model = createM3FromFile(file);

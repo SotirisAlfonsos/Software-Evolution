@@ -6,7 +6,11 @@ import Prelude;
 import lang::java::jdt::m3::Core;
 import util::ValueUI;
 
-str totalSource = "";
+list[str] totalSource = [];
+
+list[str] getSource(){
+	return totalSource;
+}
 
 int countLinesInProject(loc project){
 	M3 projectModel = createM3FromEclipseProject(project);
@@ -21,7 +25,7 @@ int countLinesInProject(loc project){
 list[str] countLinesInFile(loc file){
 	str src = removeComments(file);
 	list[str] pureSrc = filterBlankLines(splitLines(src));
-	totalSource += intercalate("\r\n", pureSrc);
+	totalSource += pureSrc;
 	return pureSrc;
 }
 
