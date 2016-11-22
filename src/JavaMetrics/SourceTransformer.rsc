@@ -2,6 +2,7 @@ module JavaMetrics::SourceTransformer
 
 import lang::java::jdt::m3::Core;
 import Prelude;
+import IO;
 
 list[str] splitLines(str source) = split("\n", source);
 str concatLines(list[str] source) = intercalate("\n", source);
@@ -15,4 +16,8 @@ str removeComments(loc file){
 		src = replaceFirst(src, comment, "");
 	}
 	return src;
+}
+
+str unifyLocation(loc l){
+	return md5HashFile(l);
 }

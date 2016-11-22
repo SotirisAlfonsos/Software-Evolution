@@ -4,17 +4,19 @@ import lang::java::jdt::m3::Core;
 import lang::java::jdt::m3::AST;
 import Prelude;
 import util::ValueUI;
+import JavaMetrics::SourceTransformer;
 
-rel[loc, int] calculateUnitComplexity(loc project){
+
+rel[str, int] calculateUnitComplexity(loc project){
 	M3 projectModel = createM3FromEclipseProject(project);
-	rel[loc, int] complexities = {};
+	rel[str, int] complexities = {};
 	
 	for(f <- files(projectModel)){
-		classAst = createAstFromFile(f, true);
-		println(classAst@src);
+		classAst = createAstFromFile(f, false);
 		visit(classAst){
-			 case x:\method(_,_,_,_): complexities += <x@src, calculateComplexity(x)>;
-			 case x:\method(_,_,_,_,_): complexities += <x@src, calculateComplexity(x)>;
+			 case x:\method(_,str name,_,_): complexities += <unifyLocation(x@src) , calculateComplexity(x)>;
+			 case x:\method(_,str name,_,_,_): complexities += <unifyLocation(x@src), calculateComplexity(x)>;
+			 case x:\constructor(str name,_,_,_): complexities += <unifyLocation(x@src), calculateComplexity(x)>;
 		}
 	}
 	return complexities;
@@ -48,5 +50,5 @@ int calculateComplexity(Declaration d){
 
 
 public void example(){
-	text(sort(calculateUnitComplexity(|project://smallsql0.21_src|), bool(a, b){ return a[1] < b[1]; }));
+	text(sort(calculateUnitComplexity(|project://hsqldb-2.3.1|), bool(a, b){ return a[1] < b[1]; }));
 }
