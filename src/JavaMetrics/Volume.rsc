@@ -6,7 +6,8 @@ import Prelude;
 import lang::java::jdt::m3::Core;
 import util::ValueUI;
 
-list[str] totalSource = [];
+// save method sources for code duplication analysis
+list[list[str]] totalSource = [];
 
 list[str] getSource(){
 	return totalSource;
@@ -25,7 +26,6 @@ int countLinesInProject(loc project){
 list[str] countLinesInFile(loc file){
 	str src = removeComments(file);
 	list[str] pureSrc = filterBlankLines(splitLines(src));
-	totalSource += pureSrc;
 	return pureSrc;
 }
 
@@ -48,7 +48,9 @@ lrel[str, int] countLinesInMethods(loc file){
 			comment = readFile(commentLoc);
 			src = replaceFirst(src, comment, "");
 		}
-		append <unifyLocation(m), size(filterBlankLines(splitLines(src)))>;
+		list[str] srcLines = filterBlankLines(splitLines(src));
+		totalSource += [srcLines];
+		append <unifyLocation(m), size(srcLines)>;
 	}
 }
 
