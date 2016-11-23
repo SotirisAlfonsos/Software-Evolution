@@ -35,7 +35,6 @@ lrel[loc location, int size] countUnitLines(list[loc] methodLocations){
 	for(f <- fs){
 		counts += <f.mloc, countLinesInMethod(f)>;
 	}
-	text(sort(counts, bool(a, b){ return a[1] < b[1]; }));
 	return counts;
 }
 
@@ -59,9 +58,4 @@ int countLinesInMethod(tuple[loc mloc, loc floc] methodFile){
 	list[str] srcLines = filterBlankLines(splitLines(src));
 	totalSource += [mapper(srcLines, trim)];
 	return size(srcLines);
-}
-
-void example(){
-	loc p = |project://smallsql0.21_src|;
-	text(sort(countUnitLines(p), bool(a, b){ return a[1] < b[1]; }));
 }

@@ -99,7 +99,7 @@ int code_Duplication(list[list[str]] filesinstr) {
 		//println("------------------------------------");
 		numberofduplicatedcode = numberofduplicatedcode + dup.y - dup.x + 1;
 	}
-	println(numberofduplicatedcode);
+	// println(numberofduplicatedcode);
 	return numberofduplicatedcode;
 	
 }

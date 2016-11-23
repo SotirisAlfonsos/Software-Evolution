@@ -18,7 +18,6 @@ lrel[loc, int] calculateUnitComplexity(M3 projectModel){
 			 case x:\constructor(str name,_,_,_): complexities += <x@src, calculateComplexity(x)>;
 		}
 	}
-	text(sort(complexities, bool(a, b){ return a[1] < b[1]; }));
 	return complexities;
 }
 
