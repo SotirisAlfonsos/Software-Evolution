@@ -28,7 +28,7 @@ tuple[int rating, list[real] sizes, list[real] percentages] calculateUnitSizeRat
 		else sizes[3] += unit;
 	}
 	
-	list[real] percentages = [s * 100 / totalLoc | s <- sizes];
+	list[real] percentages = [precision(s * 100 / totalLoc, 4) | s <- sizes];
 
 	int rating = 0;
 	if(testSizePercentages(20, 15, 5, percentages)) rating = 4;
@@ -54,7 +54,7 @@ tuple[int rating, list[real] sizes, list[real] percentages] calculateComplexityR
 		else sizes[3] += size;
 	}
 	
-	list[real] percentages = [s * 100 / totalLoc | s <- sizes];
+	list[real] percentages = [precision(s * 100 / totalLoc, 4) | s <- sizes];
 
 	int rating = 0;
 	if(testPercentages(25, 0, 0, percentages)) rating = 4;

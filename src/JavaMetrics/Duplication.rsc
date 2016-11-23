@@ -3,6 +3,7 @@ module JavaMetrics::Duplication
 import JavaMetrics::SourceTransformer;
 import lang::java::jdt::m3::Core;
 import Prelude;
+import util::Math;
 
 int code_Duplication(list[list[str]] filesinstr) {
 	
@@ -12,7 +13,9 @@ int code_Duplication(list[list[str]] filesinstr) {
 	int fstposition=-1;
 	int lstposition=-1;
 	//filesinstr = mapper(removeSimpleLines, filesinstr);
-	for (int i <- [0..size(filesinstr)]) {
+	int sourceSize = size(filesinstr); 
+	for (int i <- [0..sourceSize]) {
+		print("<precision(toReal(i * 100) / sourceSize, 3)>%     \r");
 		list[str] fileone = filesinstr[i];
 		for (int x <- [0..size(fileone)]) { 
 			if (size(fileone)-x<6) break;

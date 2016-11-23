@@ -25,35 +25,35 @@ void main(loc projectLoc){
 	num analysis = userTime();
 	print("Creating M3 Model for project. ");
 	M3 project = createM3FromEclipseProject(projectLoc);
-	println("(<usertimeToMin(userTime() - analysis)> minutes)");
+	println("(<precision(usertimeToMin(userTime() - analysis), 4)> minutes)");
 	
 	println();
-	print("Acquiring SLoC...");
+	println("Acquiring SLoC ");
 	analysis = userTime();
 	int totalLoc = countLinesInProject(project);
-	println("(<usertimeToMin(userTime() - analysis)> minutes)");
+	println("(<precision(usertimeToMin(userTime() - analysis), 4)> minutes)");
 	println(" - Project SLoC: <totalLoc> lines");
 	
 	println();
-	print("Acquiring Cyclomatic Complexity per unit...");
+	print("Acquiring Cyclomatic Complexity per unit ");
 	analysis = userTime();
 	lrel[loc mloc, int complexity] unitCc = calculateUnitComplexity(project);
-	println("(<usertimeToMin(userTime() - analysis)> minutes)");
+	println("(<precision(usertimeToMin(userTime() - analysis), 4)> minutes)");
 	println(" - Largest unit complexity: <max(unitCc<complexity>)> paths");
 	
 	println();
-	print("Acquiring SLoC per unit...");
+	println("Acquiring SLoC per unit ");
 	analysis = userTime();
 	lrel[loc mloc, int size] unitLoc = countUnitLines(unitCc<mloc>);
-	println("(<usertimeToMin(userTime() - analysis)> minutes)");
+	println("(<precision(usertimeToMin(userTime() - analysis), 4)> minutes)");
 	println(" - Largest unit size: <max(unitLoc<size>)> lines");
 	
 	println();
-	print("Acquiring duplicates...");
+	println("Acquiring duplicates... ");
 	analysis = userTime();
 	int dupCount = code_Duplication(getSource());
-	println("(<usertimeToMin(userTime() - analysis)> minutes)");
-	println(" - Duplication: <toReal(dupCount * 100)/totalLoc>%");
+	println("(<precision(usertimeToMin(userTime() - analysis), 4)> minutes)");
+	println(" - Duplication: <precision(toReal(dupCount * 100)/totalLoc, 2)>%");
 	
 	volumeRating      = calculateLocRating(totalLoc);
 	duplicationRating = calculateDuplicationRating(dupCount, totalLoc);
@@ -85,10 +85,10 @@ void main(loc projectLoc){
 	println("= - Very large:\t<unitPercent[3]>%\t(<unitSizes[3]>)");
 	println("= - - - - - - - - - - - - - - - - - - - -");
 	println("= Unit Complexity: (Category | Percentage | McCabe Complexity)");
-	println("= - Simple:\t<ccPercent[0]>\t(<ccSizes[0]>)");
-	println("= - Moderate:\t<ccPercent[1]>\t(<ccSizes[1]>)");
-	println("= - Complex:\t<ccPercent[2]>\t(<ccSizes[2]>)");
-	println("= - Very complex:\t<ccPercent[3]>\t(<ccSizes[3]>)");
+	println("= - Simple:\t  <ccPercent[0]>\t(<ccSizes[0]>)");
+	println("= - Moderate:\t  <ccPercent[1]>\t(<ccSizes[1]>)");
+	println("= - Complex:\t  <ccPercent[2]>\t(<ccSizes[2]>)");
+	println("= - Very complex: <ccPercent[3]>\t(<ccSizes[3]>)");
 	println("=========================================");
 	println();
 	println("=========== Biggest Culprits ============");
@@ -110,5 +110,5 @@ void main(loc projectLoc){
 }
 
 real usertimeToMin(num ut){
-	return (toReal(ut) / pow(10, 9) / 60);
+	return precision(toReal(ut) / pow(10, 9) / 60, 5);
 }
