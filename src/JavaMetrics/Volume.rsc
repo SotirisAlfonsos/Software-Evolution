@@ -19,7 +19,7 @@ int countLinesInProject(M3 projectModel){
 	int sourceSize = size(fs);
 	int i = 0;
 	for(f <- fs){
-		print("<precision(toReal(i * 100) / sourceSize, 3)>%\r");
+		print("<precision(toReal(i * 100) / sourceSize, 3)>%     \r");
 		lines += countLinesInFile(f);
 		i += 1;
 	}
