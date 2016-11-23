@@ -1,0 +1,63 @@
+Analysis started at: 17:53:55 (UTC)
+Creating M3 Model for project. (0.2956 minutes)
+
+Acquiring SLoC 
+(0.3065 minutes)
+ - Project SLoC: 24603 lines
+
+Acquiring Cyclomatic Complexity per unit (0.03307 minutes)
+ - Largest unit complexity: 134 paths
+
+Acquiring SLoC per unit 
+Preprocessing: 100%       
+(0.3862 minutes)
+ - Largest unit size: 360 lines
+
+Acquiring duplicates... 
+(3.132 minutes)
+ - Duplication: 9.6%
+
+================ Metrics ================
+= Volume:       ++
+= Unit Risk:    o
+= Complexity:   --
+= Duplication:  o
+= - - - - - - - - - - - - - - - - - - - -
+= Analysability: +
+= Changeability: -
+= Stability:     N/A
+= Testability:   -
+=========================================
+
+================ Details ================
+= Unit Size: (Category | Percentage | # of lines)
+= - Small:      41.10%  (10113.)
+= - Medium:     18.73%  (4607.)
+= - Large:      14.15%  (3482.)
+= - Very large: 13.45%  (3310.)
+= - - - - - - - - - - - - - - - - - - - -
+= Unit Complexity: (Category | Percentage | McCabe Complexity)
+= - Simple:       65.58 (16135.)
+= - Moderate:     6.670 (1641.)
+= - Complex:      10.08 (2481.)
+= - Very complex: 5.101 (1255.)
+=========================================
+
+=========== Biggest Culprits ============
+= Unit Size:
+= 360   |java+compilationUnit:///E:/Stan/Eclipse/smallsql0.21_src/src/smallsql/database/SQLParser.java|(52535,15275,<1386,4>,<1761,5>)
+= 289   |java+compilationUnit:///E:/Stan/Eclipse/smallsql0.21_src/src/smallsql/database/DateTime.java|(9931,9699,<340,1>,<632,2>)
+= 219   |java+compilationUnit:///E:/Stan/Eclipse/smallsql0.21_src/src/smallsql/junit/TestDataTypes.java|(3418,9246,<83,4>,<312,5>)
+= 188   |java+compilationUnit:///E:/Stan/Eclipse/smallsql0.21_src/src/smallsql/database/ExpressionArithmetic.java|(18644,9508,<530,4>,<718,5>)
+= 184   |java+compilationUnit:///E:/Stan/Eclipse/smallsql0.21_src/src/smallsql/database/SQLTokenizer.java|(1621,9201,<46,4>,<250,5>)
+= - - - - - - - - - - - - - - - - - - - -
+= Unit Complexity:
+= 134   |java+compilationUnit:///E:/Stan/Eclipse/smallsql0.21_src/src/smallsql/database/ExpressionArithmetic.java|(18644,9508,<530,4>,<718,5>)
+= 89    |java+compilationUnit:///E:/Stan/Eclipse/smallsql0.21_src/src/smallsql/database/SQLTokenizer.java|(1621,9201,<46,4>,<250,5>)
+= 85    |java+compilationUnit:///E:/Stan/Eclipse/smallsql0.21_src/src/smallsql/database/SQLParser.java|(52535,15275,<1386,4>,<1761,5>)
+= 72    |java+compilationUnit:///E:/Stan/Eclipse/smallsql0.21_src/src/smallsql/database/StoreImpl.java|(22627,6766,<655,4>,<814,5>)
+= 69    |java+compilationUnit:///E:/Stan/Eclipse/smallsql0.21_src/src/smallsql/database/ExpressionValue.java|(2725,5781,<101,0>,<261,2>)
+=========================================
+
+Analysis done at: 17:58:25 (UTC)
+Time elapsed: 4.1628 minutes.

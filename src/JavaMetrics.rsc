@@ -35,7 +35,7 @@ void main(loc projectLoc){
 	println(" - Project SLoC: <totalLoc> lines");
 	
 	println();
-	print("Acquiring Cyclomatic Complexity per unit ");
+	println("Acquiring Cyclomatic Complexity per unit ");
 	analysis = userTime();
 	lrel[loc mloc, int complexity] unitCc = calculateUnitComplexity(project);
 	println("(<precision(usertimeToMin(userTime() - analysis), 4)> minutes)");
