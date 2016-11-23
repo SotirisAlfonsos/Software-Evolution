@@ -1,4 +1,5 @@
 module JavaMetrics::SigMappings
+import IO;
 
 list[str] stars = ["--", "-", "o", "+", "++"];
 int calculateLocRating(int LoC){
@@ -25,7 +26,7 @@ int calculateUnitSizeRating(list[int] unitLoc, int totalLoc){
 		else sizes["veryLarge"] += unit;
 	}
 	
-	map[str, int] percentages = (cat: sizes[cat] * 100 / totalLoc | cat <- sizes);
+	map[str, real] percentages = (cat: sizes[cat] * 100 / totalLoc | cat <- sizes);
 	println(percentages);
 
 	if(testSizePercentages(20, 15, 5, percentages)) return 4;
@@ -36,12 +37,12 @@ int calculateUnitSizeRating(list[int] unitLoc, int totalLoc){
 	
 }
 
-bool testSizePercentages(int m, int l, int vl, map[str, int] p){ 
+bool testSizePercentages(int m, int l, int vl, map[str, real] p){ 
 	return p["medium"] <= m && p["large"] <= l && p["veryLarge"] <= vl;
 }
 
 int calculateComplexityRating(lrel[str, int] unitLoc, rel[str, int] cc, int totalLoc){
-	map[str, int] sizes = ("simple": 0., "moderate": 0., "high": 0., "veryHigh": 0.);
+	map[str, real] sizes = ("simple": 0., "moderate": 0., "high": 0., "veryHigh": 0.);
 	for(<str l, int size> <- unitLoc){
 		if(cc[l] <= 10) sizes["simple"]  += size;
 		else if(cc[l] <= 20) sizes["moderate"] += size;
@@ -49,7 +50,7 @@ int calculateComplexityRating(lrel[str, int] unitLoc, rel[str, int] cc, int tota
 		else sizes["veryHigh"] += size;
 	}
 	
-	map[str, int] percentages = (cat: sizes[cat] * 100 / totalLoc | cat <- sizes);
+	map[str, real] percentages = (cat: sizes[cat] * 100 / totalLoc | cat <- sizes);
 	println(percentages);
 
 	if(testPercentages(25, 0, 0, percentages)) return 4;
@@ -59,6 +60,6 @@ int calculateComplexityRating(lrel[str, int] unitLoc, rel[str, int] cc, int tota
 	else return 0;	
 }
 
-bool testPercentages(int m, int l, int vl, map[str, int] p){ 
+bool testPercentages(int m, int l, int vl, map[str, real] p){ 
 	return p["moderate"] <= m && p["high"] <= l && p["veryHigh"] <= vl;
 }

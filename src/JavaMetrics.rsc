@@ -19,17 +19,18 @@ void main(loc project){
 	println("Acquiring LoC");
 	num analysis = userTime();
 	int totalLoc = countLinesInProject(project);
-	println("Duration <usertimeToMin(userTime() - analysis)> minutes");
+	println("\t<totalLoc>");
+	println("\tDuration <usertimeToMin(userTime() - analysis)> minutes");
 	
 	println("Acquiring Unit LoC");
 	analysis = userTime();
 	lrel[str, int] unitLoc = countUnitLines(project);
-	println("Duration <usertimeToMin(userTime() - analysis)> minutes");
+	println("\tDuration <usertimeToMin(userTime() - analysis)> minutes");
 	
 	println("Acquiring Unit Complexity");
 	analysis = userTime();
 	rel[str, int] unitCc   = calculateUnitComplexity(project);
-	println("Duration <usertimeToMin(userTime() - analysis)> minutes");
+	println("\tDuration <usertimeToMin(userTime() - analysis)> minutes");
 	
 	//println("Acquiring duplicates");
 	//analysis = userTime();
