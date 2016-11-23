@@ -9,7 +9,7 @@ import util::ValueUI;
 // save method sources for code duplication analysis
 list[list[str]] totalSource = [];
 
-list[str] getSource(){
+list[list[str]] getSource(){
 	return totalSource;
 }
 

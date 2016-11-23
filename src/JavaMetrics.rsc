@@ -44,17 +44,17 @@ void main(loc projectLoc){
 	println("\tLargest unit complexity: <max(unitCc<size>)> paths");
 	println("\tDuration <usertimeToMin(userTime() - analysis)> minutes");
 	
-	//println();
-	//println("Acquiring duplicates... (this might take a while)");
-	//analysis = userTime();
-	//int dupCount = countDuplicatesInString(getSource());
-	//println("Duration <usertimeToMin(userTime() - analysis)> minutes");
+	println();
+	println("Acquiring duplicates... (this might take a while)");
+	analysis = userTime();
+	int dupCount = code_Duplication(getSource());
+	println("Duration <usertimeToMin(userTime() - analysis)> minutes");
 	
 	println();
 	println("Volume: <stars[calculateLocRating(totalLoc)]>");
 	println("Unit Risk: <stars[calculateUnitSizeRating([size | <_, size> <- unitLoc], totalLoc)]>");
 	println("Complexity: <stars[calculateComplexityRating(unitLoc, unitCc, totalLoc)]>");
-	//println("Duplication: <toReal(dupCount) * 100 / totalLoc>");
+	println("Duplication: <toReal(dupCount) * 100 / totalLoc>");
 	
 	println();
 	st = now();
