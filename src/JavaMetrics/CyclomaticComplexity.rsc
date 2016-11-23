@@ -7,8 +7,7 @@ import util::ValueUI;
 import JavaMetrics::SourceTransformer;
 
 
-rel[str, int] calculateUnitComplexity(loc project){
-	M3 projectModel = createM3FromEclipseProject(project);
+rel[str, int] calculateUnitComplexity(M3 projectModel){
 	rel[str, int] complexities = {};
 	
 	for(f <- files(projectModel)){
@@ -19,6 +18,7 @@ rel[str, int] calculateUnitComplexity(loc project){
 			 case x:\constructor(str name,_,_,_): complexities += <unifyLocation(x@src), calculateComplexity(x)>;
 		}
 	}
+	text(sort(complexities, bool(a, b){ return a[1] < b[1]; }));
 	return complexities;
 }
 

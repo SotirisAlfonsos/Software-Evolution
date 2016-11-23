@@ -1,5 +1,6 @@
 module JavaMetrics::SigMappings
 import IO;
+import Prelude;
 
 list[str] stars = ["--", "-", "o", "+", "++"];
 int calculateLocRating(int LoC){
@@ -41,12 +42,13 @@ bool testSizePercentages(int m, int l, int vl, map[str, real] p){
 	return p["medium"] <= m && p["large"] <= l && p["veryLarge"] <= vl;
 }
 
-int calculateComplexityRating(lrel[str, int] unitLoc, rel[str, int] cc, int totalLoc){
+int calculateComplexityRating(lrel[str, int] unitLoc, rel[str, int] unitCc, int totalLoc){
 	map[str, real] sizes = ("simple": 0., "moderate": 0., "high": 0., "veryHigh": 0.);
+	map[str, set[int]] cc = toMap(unitCc);
 	for(<str l, int size> <- unitLoc){
-		if(cc[l] <= 10) sizes["simple"]  += size;
-		else if(cc[l] <= 20) sizes["moderate"] += size;
-		else if(cc[l] <= 50) sizes["high"]  += size;
+		if(max(cc[l]) <= 10) sizes["simple"]  += size;
+		else if(max(cc[l]) <= 20) sizes["moderate"] += size;
+		else if(max(cc[l]) <= 50) sizes["high"]  += size;
 		else sizes["veryHigh"] += size;
 	}
 	

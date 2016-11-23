@@ -15,16 +15,17 @@ import lang::java::m3::AST;
 import util::Benchmark;
 import util::Math;
 
-void main(loc project){
+void main(loc projectLoc){
+	num totalTime = userTime();
 	st = now();
 	println("Analysis started at: <st.hour>:<st.minute>.<st.second> (UTC)");
 	
 	list[str] stars = ["--", "-", "o", "+", "++"];
 
+	M3 project = createM3FromEclipseProject(projectLoc);
 	println();
 	println("Acquiring SLoC...");
 	num analysis = userTime();
-	num totalTime = userTime();
 	int totalLoc = countLinesInProject(project);
 	println("\tProject SLoC: <totalLoc> lines");
 	println("\tDuration <usertimeToMin(userTime() - analysis)> minutes");
@@ -53,12 +54,12 @@ void main(loc project){
 	println("Volume: <stars[calculateLocRating(totalLoc)]>");
 	println("Unit Risk: <stars[calculateUnitSizeRating([size | <_, size> <- unitLoc], totalLoc)]>");
 	println("Complexity: <stars[calculateComplexityRating(unitLoc, unitCc, totalLoc)]>");
-	//println("Duplication: <dupCount * 100 / totalLoc>");
+	//println("Duplication: <toReal(dupCount) * 100 / totalLoc>");
 	
 	println();
-	println("Time elapsed: <usertimeToMin(userTime() - totalTime)> minutes.");
 	st = now();
 	println("Analysis done at: <st.hour>:<st.minute>.<st.second> (UTC)");
+	println("Time elapsed: <usertimeToMin(userTime() - totalTime)> minutes.");
 }
 
 real usertimeToMin(num ut){

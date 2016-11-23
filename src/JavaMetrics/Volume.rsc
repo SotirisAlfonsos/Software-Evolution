@@ -13,8 +13,7 @@ list[str] getSource(){
 	return totalSource;
 }
 
-int countLinesInProject(loc project){
-	M3 projectModel = createM3FromEclipseProject(project);
+int countLinesInProject(M3 projectModel){
 	set[loc] fs = files(projectModel);
 	list[str] lines = [];
 	for(f <- fs){
@@ -29,8 +28,7 @@ list[str] countLinesInFile(loc file){
 	return pureSrc;
 }
 
-lrel[str location, int size] countUnitLines(loc project){
-	M3 projectModel = createM3FromEclipseProject(project);
+lrel[str location, int size] countUnitLines(M3 projectModel){
 	set[loc] fs = files(projectModel);
 	lrel[str, int] counts = [];
 	for(f <- fs){
