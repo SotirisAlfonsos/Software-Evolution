@@ -3,6 +3,7 @@ module JavaMetrics::SourceTransformer
 import lang::java::jdt::m3::Core;
 import Prelude;
 import IO;
+import util::Math;
 
 list[str] splitLines(str source) = split("\n", source);
 str concatLines(list[str] source) = intercalate("\n", source);
@@ -22,5 +23,13 @@ str removeComments(loc file){
 }
 
 str unifyLocation(loc l){
-	return md5HashFile(l);
+	str file = "";
+	if(l.scheme == "java+compilationUnit"){
+		file = l.file;
+	} else if (/java\+(constructor|method)/ := l.scheme){
+		file = l.parent.file + ".java";
+	} else {
+		throw Exception("Unsupported scheme");
+	}
+	return "<file>+<toString(hash(readFile(l)))>";
 }

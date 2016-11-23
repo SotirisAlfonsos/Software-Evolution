@@ -28,6 +28,7 @@ int calculateUnitSizeRating(list[int] unitLoc, int totalLoc){
 	}
 	
 	map[str, real] percentages = (cat: sizes[cat] * 100 / totalLoc | cat <- sizes);
+	println(sizes);
 	println(percentages);
 
 	if(testSizePercentages(20, 15, 5, percentages)) return 4;
@@ -42,17 +43,18 @@ bool testSizePercentages(int m, int l, int vl, map[str, real] p){
 	return p["medium"] <= m && p["large"] <= l && p["veryLarge"] <= vl;
 }
 
-int calculateComplexityRating(lrel[str, int] unitLoc, rel[str, int] unitCc, int totalLoc){
+int calculateComplexityRating(lrel[loc mloc, int size] unitLoc, lrel[loc mloc, int complexity] unitCc, int totalLoc){
 	map[str, real] sizes = ("simple": 0., "moderate": 0., "high": 0., "veryHigh": 0.);
-	map[str, set[int]] cc = toMap(unitCc);
-	for(<str l, int size> <- unitLoc){
-		if(max(cc[l]) <= 10) sizes["simple"]  += size;
-		else if(max(cc[l]) <= 20) sizes["moderate"] += size;
-		else if(max(cc[l]) <= 50) sizes["high"]  += size;
+	map[loc, int] cc = toMapUnique(unitCc);
+	for(<loc l, int size> <- unitLoc){
+		if(cc[l] <= 10) sizes["simple"]  += size;
+		else if(cc[l] <= 20) sizes["moderate"] += size;
+		else if(cc[l] <= 50) sizes["high"]  += size;
 		else sizes["veryHigh"] += size;
 	}
 	
 	map[str, real] percentages = (cat: sizes[cat] * 100 / totalLoc | cat <- sizes);
+	println(sizes);
 	println(percentages);
 
 	if(testPercentages(25, 0, 0, percentages)) return 4;

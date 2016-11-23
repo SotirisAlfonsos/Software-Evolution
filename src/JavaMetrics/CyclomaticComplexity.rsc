@@ -7,15 +7,15 @@ import util::ValueUI;
 import JavaMetrics::SourceTransformer;
 
 
-rel[str, int] calculateUnitComplexity(M3 projectModel){
-	rel[str, int] complexities = {};
+lrel[loc, int] calculateUnitComplexity(M3 projectModel){
+	lrel[loc, int] complexities = [];
 	
 	for(f <- files(projectModel)){
 		classAst = createAstFromFile(f, false);
 		visit(classAst){
-			 case x:\method(_,str name,_,_): complexities += <unifyLocation(x@src) , calculateComplexity(x)>;
-			 case x:\method(_,str name,_,_,_): complexities += <unifyLocation(x@src), calculateComplexity(x)>;
-			 case x:\constructor(str name,_,_,_): complexities += <unifyLocation(x@src), calculateComplexity(x)>;
+			 case x:\method(_,str name,_,_): complexities += <x@src , calculateComplexity(x)>;
+			 case x:\method(_,str name,_,_,_): complexities += <x@src, calculateComplexity(x)>;
+			 case x:\constructor(str name,_,_,_): complexities += <x@src, calculateComplexity(x)>;
 		}
 	}
 	text(sort(complexities, bool(a, b){ return a[1] < b[1]; }));

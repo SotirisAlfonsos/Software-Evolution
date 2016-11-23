@@ -28,32 +28,40 @@ list[str] countLinesInFile(loc file){
 	return pureSrc;
 }
 
-lrel[str location, int size] countUnitLines(M3 projectModel){
-	set[loc] fs = files(projectModel);
-	lrel[str, int] counts = [];
+lrel[loc location, int size] countUnitLines(list[loc] methodLocations){
+	rel[loc mloc, loc floc] fs = { <l, |<l.scheme>://<l.path>|> | l <- methodLocations };
+	generateFileModels(fs<floc>);
+	lrel[loc, int] counts = [];
 	for(f <- fs){
-		counts += countLinesInMethods(f);
+		counts += <f.mloc, countLinesInMethod(f)>;
 	}
+	text(sort(counts, bool(a, b){ return a[1] < b[1]; }));
 	return counts;
 }
 
-lrel[str, int] countLinesInMethods(loc file){
-	M3 fileModel = createM3FromFile(file);
-	set[loc] ms = methods(fileModel);
-	return for(m <- ms){
-		str src = readFile(m);
-		for(commentLoc <- fileModel@documentation<comments>){
-			comment = readFile(commentLoc);
-			src = replaceFirst(src, comment, "");
+map[loc, M3] fileModels = ();
+void generateFileModels(set[loc] methodLocations){
+	set[loc] fileLocations = {|file://<l.path>| | l <- methodLocations};
+	for(floc <- fileLocations){
+		if(!(floc in fileModels)){
+			fileModels[floc] = createM3FromFile(floc);
 		}
-		list[str] srcLines = filterBlankLines(splitLines(src));
-		totalSource += [srcLines];
-		append <unifyLocation(m), size(srcLines)>;
 	}
+}
+
+int countLinesInMethod(tuple[loc mloc, loc floc] methodFile){
+	M3 fileModel = fileModels[|file://<methodFile.floc.path>|];
+	str src = readFile(|file://<methodFile.mloc.path>|(methodFile.mloc.offset, methodFile.mloc.length)); 
+	for(commentLoc <- fileModel@documentation<comments>){
+		comment = readFile(commentLoc);
+		src = replaceFirst(src, comment, "");
+	}
+	list[str] srcLines = filterBlankLines(splitLines(src));
+	totalSource += [mapper(srcLines, trim)];
+	return size(srcLines);
 }
 
 void example(){
 	loc p = |project://smallsql0.21_src|;
-	//println(countLinesInProject(p));
 	text(sort(countUnitLines(p), bool(a, b){ return a[1] < b[1]; }));
 }

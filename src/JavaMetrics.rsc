@@ -22,26 +22,30 @@ void main(loc projectLoc){
 	
 	list[str] stars = ["--", "-", "o", "+", "++"];
 
+	num analysis = userTime();
+	println("Creating M3 Model for project...");
 	M3 project = createM3FromEclipseProject(projectLoc);
+	println("\tDuration <usertimeToMin(userTime() - analysis)> minutes");
+	
 	println();
 	println("Acquiring SLoC...");
-	num analysis = userTime();
+	analysis = userTime();
 	int totalLoc = countLinesInProject(project);
 	println("\tProject SLoC: <totalLoc> lines");
 	println("\tDuration <usertimeToMin(userTime() - analysis)> minutes");
 	
 	println();
-	println("Acquiring SLoC per unit...");
+	println("Acquiring Cyclomatic Complexity per unit...");
 	analysis = userTime();
-	lrel[str hash, int size] unitLoc = countUnitLines(project);
-	println("\tLargest unit size: <max(unitLoc<size>)> lines");
+	lrel[loc mloc, int complexity] unitCc = calculateUnitComplexity(project);
+	println("\tLargest unit complexity: <max(unitCc<complexity>)> paths");
 	println("\tDuration <usertimeToMin(userTime() - analysis)> minutes");
 	
 	println();
-	println("Acquiring Cyclomatic Complexity per unit...");
+	println("Acquiring SLoC per unit...");
 	analysis = userTime();
-	rel[str hash, int size] unitCc = calculateUnitComplexity(project);
-	println("\tLargest unit complexity: <max(unitCc<size>)> paths");
+	lrel[loc mloc, int size] unitLoc = countUnitLines(unitCc<mloc>);
+	println("\tLargest unit size: <max(unitLoc<size>)> lines");
 	println("\tDuration <usertimeToMin(userTime() - analysis)> minutes");
 	
 	println();
@@ -52,7 +56,7 @@ void main(loc projectLoc){
 	
 	println();
 	println("Volume: <stars[calculateLocRating(totalLoc)]>");
-	println("Unit Risk: <stars[calculateUnitSizeRating([size | <_, size> <- unitLoc], totalLoc)]>");
+	println("Unit Risk: <stars[calculateUnitSizeRating(unitLoc<size>, totalLoc)]>");
 	println("Complexity: <stars[calculateComplexityRating(unitLoc, unitCc, totalLoc)]>");
 	println("Duplication: <toReal(dupCount) * 100 / totalLoc>");
 	
