@@ -84,11 +84,11 @@ void main(loc projectLoc){
 	println("= - Large:\t<unitPercent[2]>%\t(<unitSizes[2]>)");
 	println("= - Very large:\t<unitPercent[3]>%\t(<unitSizes[3]>)");
 	println("= - - - - - - - - - - - - - - - - - - - -");
-	println("= Unit Complexity: (Category | Percentage | McCabe Complexity)");
-	println("= - Simple:\t  <ccPercent[0]>\t(<ccSizes[0]>)");
-	println("= - Moderate:\t  <ccPercent[1]>\t(<ccSizes[1]>)");
-	println("= - Complex:\t  <ccPercent[2]>\t(<ccSizes[2]>)");
-	println("= - Very complex: <ccPercent[3]>\t(<ccSizes[3]>)");
+	println("= Unit Complexity: (Category | Percentage | # of lines)");
+	println("= - Simple:\t  <ccPercent[0]>%\t(<ccSizes[0]>)");
+	println("= - Moderate:\t  <ccPercent[1]>%\t(<ccSizes[1]>)");
+	println("= - Complex:\t  <ccPercent[2]>%\t(<ccSizes[2]>)");
+	println("= - Very complex: <ccPercent[3]>%\t(<ccSizes[3]>)");
 	println("=========================================");
 	println();
 	println("=========== Biggest Culprits ============");
