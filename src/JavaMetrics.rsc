@@ -72,10 +72,10 @@ void main(loc projectLoc){
 	println("= Complexity:\t<stars[complexityRating]>");
 	println("= Duplication:\t<stars[duplicationRating]>");
 	println("= - - - - - - - - - - - - - - - - - - - -");
-	println("= Analysability: <stars[analysability]>");
-	println("= Changeability: <stars[changeability]>");
-	println("= Stability:\t N/A");
-	println("= Testability:\t <stars[testability]>");
+	println("= Analysability:   <stars[analysability]>");
+	println("= Changeability:   <stars[changeability]>");
+	println("= Stability:\t   N/A");
+	println("= Testability:\t   <stars[testability]>");
 	println("= Maintainability:\t <stars[maintainability]>");
 	println("=========================================");
 	println();
