@@ -22,19 +22,19 @@ int calculateLocRating(int LoC){
 tuple[int rating, list[real] sizes, list[real] percentages] calculateUnitSizeRating(list[int] unitLoc, int totalLoc){
 	list[real] sizes = [0.,0.,0.,0.];
 	for(int unit <- unitLoc){
-		if(unit <= 15) sizes[0]  += unit;
-		else if(unit <= 30) sizes[1] += unit;
-		else if(unit <= 60) sizes[2]  += unit;
+		if(unit <= 30) sizes[0]  += unit;
+		else if(unit <= 45) sizes[1] += unit;
+		else if(unit <= 75) sizes[2]  += unit;
 		else sizes[3] += unit;
 	}
 	
 	list[real] percentages = [precision(s * 100 / totalLoc, 4) | s <- sizes];
 
 	int rating = 0;
-	if(testSizePercentages(20, 15, 5, percentages)) rating = 4;
-	else if(testSizePercentages(30, 20, 10, percentages)) rating = 3;
-	else if(testSizePercentages(40, 25, 15, percentages)) rating = 2;
-	else if(testSizePercentages(50, 35, 20, percentages)) rating = 1;
+	if(testSizePercentages(20, 11, 4, percentages)) rating = 4;
+	else if(testSizePercentages(26, 16, 7, percentages)) rating = 3;
+	else if(testSizePercentages(34, 22, 11, percentages)) rating = 2;
+	else if(testSizePercentages(46, 31, 18, percentages)) rating = 1;
 
 	return <rating, sizes, percentages>;
 	

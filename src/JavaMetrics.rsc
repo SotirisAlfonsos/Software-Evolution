@@ -64,9 +64,10 @@ void main(loc projectLoc){
 	<unitRating, unitSizes, unitPercent>      = calculateUnitSizeRating(unitLoc<size>, totalLoc);
 	<complexityRating, ccSizes, ccPercent>    = calculateComplexityRating(unitLoc, unitCc, totalLoc);
 	
-	int analysability = round(toReal(sum([volumeRating, duplicationRating, unitRating])) / 2);
-	int changeability = sum([complexityRating, duplicationRating, 1]) / 2;
-	int testability   = sum([complexityRating, unitRating, 1]) / 2;
+	analysability   = round(toReal(sum([volumeRating, duplicationRating, unitRating])) / 3);
+	changeability   = sum([complexityRating, duplicationRating, 1]) / 2;
+	testability     = sum([complexityRating, unitRating, 1]) / 2;
+	maintainability = sum([volumeRating, duplicationRating, unitRating, complexityRating, 2]) / 4; 
 	
 	println();
 	println("================ Metrics ================");
@@ -75,10 +76,11 @@ void main(loc projectLoc){
 	println("= Complexity:\t<stars[complexityRating]>");
 	println("= Duplication:\t<stars[duplicationRating]>");
 	println("= - - - - - - - - - - - - - - - - - - - -");
-	println("= Analysability: <stars[analysability]>");
-	println("= Changeability: <stars[changeability]>");
-	println("= Stability:\t N/A");
-	println("= Testability:\t <stars[testability]>");
+	println("= Analysability:   <stars[analysability]>");
+	println("= Changeability:   <stars[changeability]>");
+	println("= Stability:\t   N/A");
+	println("= Testability:\t   <stars[testability]>");
+	println("= Maintainability: <stars[maintainability]>");
 	println("=========================================");
 	println();
 	println("================ Details ================");

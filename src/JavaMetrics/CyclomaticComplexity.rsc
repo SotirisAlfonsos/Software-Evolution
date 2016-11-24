@@ -30,7 +30,6 @@ int calculateComplexity(Declaration d){
 		case \case(_): result += 1;
 		
 		case \catch(_): result += 1;
-		
 		case \for(_,_,_): result += 1;
 		case \for(_,_,_,_): result += 1;
 		case \foreach(_,_,_): result += 1;
