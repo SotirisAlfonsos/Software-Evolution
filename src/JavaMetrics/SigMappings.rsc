@@ -22,9 +22,9 @@ int calculateLocRating(int LoC){
 tuple[int rating, list[real] sizes, list[real] percentages] calculateUnitSizeRating(list[int] unitLoc, int totalLoc){
 	list[real] sizes = [0.,0.,0.,0.];
 	for(int unit <- unitLoc){
-		if(unit <= 15) sizes[0]  += unit;
-		else if(unit <= 30) sizes[1] += unit;
-		else if(unit <= 60) sizes[2]  += unit;
+		if(unit <= 30) sizes[0]  += unit;
+		else if(unit <= 45) sizes[1] += unit;
+		else if(unit <= 75) sizes[2]  += unit;
 		else sizes[3] += unit;
 	}
 	
