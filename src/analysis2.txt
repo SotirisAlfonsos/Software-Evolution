@@ -1,0 +1,64 @@
+rascal>main(|project://hsqldb-2.3.1|);
+Analysis started at: 08:26:37 (UTC)
+Creating M3 Model for project. (1.527 minutes)
+
+Acquiring SLoC 
+(1.533 minutes)
+ - Project SLoC: 171745 lines
+
+Acquiring Cyclomatic Complexity per unit 
+(0.2253 minutes)
+ - Largest unit complexity: 345 paths
+
+Acquiring SLoC per unit 
+Preprocessing: 100%       
+(3.259 minutes)
+ - Largest unit size: 1091 lines
+
+Skipping duplication metric
+
+
+================ Metrics ================
+= Volume:       +
+= Unit Risk:    --
+= Complexity:   --
+= Duplication:  --
+= - - - - - - - - - - - - - - - - - - - -
+= Analysability: o
+= Changeability: --
+= Stability:     N/A
+= Testability:   --
+=========================================
+
+================ Details ================
+= Unit Size: (Category | Percentage | # of lines)
+= - Small:      26.70%  (45848.)
+= - Medium:     16.91%  (29043.)
+= - Large:      16.73%  (28731.)
+= - Very large: 28.89%  (49623.)
+= - - - - - - - - - - - - - - - - - - - -
+= Unit Complexity: (Category | Percentage | # of lines)
+= - Simple:       59.40%        (102010.)
+= - Moderate:     11.88%        (20397.)
+= - Complex:      9.978%        (17137.)
+= - Very complex: 7.978%        (13701.)
+=========================================
+
+=========== Biggest Culprits ============
+= Unit Size:
+= 1091  |java+compilationUnit:///E:/Stan/UvA/evolution/hsqldb-2.3.1/hsqldb/src/org/hsqldb/FunctionCustom.java|(35095,48555,<796,4>,<2176,5>)
+= 986   |java+compilationUnit:///E:/Stan/UvA/evolution/hsqldb-2.3.1/hsqldb/src/org/hsqldb/FunctionCustom.java|(83656,43343,<2178,4>,<3433,5>)
+= 844   |java+compilationUnit:///E:/Stan/UvA/evolution/hsqldb-2.3.1/hsqldb/src/org/hsqldb/StatementSchema.java|(9718,43296,<292,4>,<1367,5>)
+= 804   |java+compilationUnit:///E:/Stan/UvA/evolution/hsqldb-2.3.1/hsqldb/src/org/hsqldb/StatementCommand.java|(9068,39449,<239,4>,<1227,5>)
+= 701   |java+compilationUnit:///E:/Stan/UvA/evolution/hsqldb-2.3.1/hsqldb/src/org/hsqldb/server/ServerConnection.java|(13943,49290,<413,4>,<1515,5>)
+= - - - - - - - - - - - - - - - - - - - -
+= Unit Complexity:
+= 345   |java+compilationUnit:///E:/Stan/UvA/evolution/hsqldb-2.3.1/hsqldb/src/org/hsqldb/FunctionCustom.java|(83656,43343,<2178,4>,<3433,5>)
+= 296   |java+compilationUnit:///E:/Stan/UvA/evolution/hsqldb-2.3.1/hsqldb/src/org/hsqldb/FunctionCustom.java|(35095,48555,<796,4>,<2176,5>)
+= 154   |java+compilationUnit:///E:/Stan/UvA/evolution/hsqldb-2.3.1/hsqldb/src/org/hsqldb/StatementSchema.java|(9718,43296,<292,4>,<1367,5>)
+= 154   |java+compilationUnit:///E:/Stan/UvA/evolution/hsqldb-2.3.1/hsqldb/src/org/hsqldb/FunctionSQL.java|(44393,21351,<1200,4>,<1796,5>)
+= 139   |java+compilationUnit:///E:/Stan/UvA/evolution/hsqldb-2.3.1/hsqldb/src/org/hsqldb/cmdline/SqlFile.java|(212852,31124,<5197,4>,<5869,5>)
+=========================================
+
+Analysis done at: 08:34:48 (UTC)
+Time elapsed: 6.5953 minutes.
