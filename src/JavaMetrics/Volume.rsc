@@ -35,6 +35,7 @@ list[str] countLinesInFile(loc file){
 lrel[loc location, int size] countUnitLines(list[loc] methodLocations){
 	rel[loc mloc, loc floc] fs = { <l, |<l.scheme>://<l.path>|> | l <- methodLocations };
 	generateFileModels(fs<floc>);
+	totalSource = []; // empty aggregated source
 	lrel[loc, int] counts = [];
 	int sourceSize = size(fs);
 	int i = 0;
