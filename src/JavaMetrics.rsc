@@ -49,20 +49,24 @@ void main(loc projectLoc){
 	println(" - Largest unit size: <max(unitLoc<size>)> lines");
 	
 	println();
-	println("Acquiring duplicates... ");
-	analysis = userTime();
-	int dupCount = code_Duplication(getSource());
-	println("(<precision(usertimeToMin(userTime() - analysis), 4)> minutes)");
-	println(" - Duplication: <precision(toReal(dupCount * 100)/totalLoc, 2)>%");
+	println("Skipping duplication metric");
+	println();
+	//println();
+	//println("Acquiring duplicates... ");
+	//analysis = userTime();
+	//int dupCount = code_Duplication(getSource());
+	//println("(<precision(usertimeToMin(userTime() - analysis), 4)> minutes)");
+	//println(" - Duplication: <precision(toReal(dupCount * 100)/totalLoc, 2)>%");
 	
 	volumeRating      = calculateLocRating(totalLoc);
-	duplicationRating = calculateDuplicationRating(dupCount, totalLoc);
+	duplicationRating = 0;
+	//duplicationRating = calculateDuplicationRating(dupCount, totalLoc);
 	<unitRating, unitSizes, unitPercent>      = calculateUnitSizeRating(unitLoc<size>, totalLoc);
 	<complexityRating, ccSizes, ccPercent>    = calculateComplexityRating(unitLoc, unitCc, totalLoc);
 	
-	analysability = round(toReal(sum([volumeRating, duplicationRating, unitRating])) / 3);
-	changeability = sum([complexityRating, duplicationRating, 1]) / 2;
-	testability   = sum([complexityRating, unitRating, 1]) / 2;
+	int analysability = round(toReal(sum([volumeRating, duplicationRating, unitRating])) / 2);
+	int changeability = sum([complexityRating, duplicationRating, 1]) / 2;
+	int testability   = sum([complexityRating, unitRating, 1]) / 2;
 	
 	println();
 	println("================ Metrics ================");
