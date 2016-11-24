@@ -76,7 +76,7 @@ void main(loc projectLoc){
 	println("= Changeability:   <stars[changeability]>");
 	println("= Stability:\t   N/A");
 	println("= Testability:\t   <stars[testability]>");
-	println("= Maintainability:\t <stars[maintainability]>");
+	println("= Maintainability: <stars[maintainability]>");
 	println("=========================================");
 	println();
 	println("================ Details ================");
