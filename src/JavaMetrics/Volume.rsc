@@ -8,9 +8,14 @@ import util::Math;
 
 // save method sources for code duplication analysis
 list[list[str]] totalSource = [];
+list[loc] sourceLocs = [];
 
 list[list[str]] getSource(){
 	return totalSource;
+}
+
+list[str] getLocs(){
+	return sourceLocs;
 }
 
 int countLinesInProject(M3 projectModel){
@@ -36,6 +41,7 @@ lrel[loc location, int size] countUnitLines(list[loc] methodLocations){
 	rel[loc mloc, loc floc] fs = { <l, |<l.scheme>://<l.path>|> | l <- methodLocations };
 	generateFileModels(fs<floc>);
 	totalSource = []; // empty aggregated source
+	sourceLocs = [];
 	lrel[loc, int] counts = [];
 	int sourceSize = size(fs);
 	int i = 0;
@@ -71,5 +77,6 @@ int countLinesInMethod(tuple[loc mloc, loc floc] methodFile){
 	}
 	list[str] srcLines = filterBlankLines(splitLines(src));
 	totalSource += [mapper(srcLines, trim)];
+	sourceLocs += |file://<methodFile.mloc.path>|(methodFile.mloc.offset, methodFile.mloc.length);
 	return size(srcLines);
 }
