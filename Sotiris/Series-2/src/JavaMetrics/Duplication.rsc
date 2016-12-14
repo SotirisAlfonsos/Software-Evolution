@@ -6,6 +6,7 @@ import Prelude;
 import util::Math;
 import Map;
 import JavaMetrics::Volume;
+import JavaMetrics::Helpers;
 import vis::Figure;
 import vis::Render;
 import vis::KeySym;
@@ -57,9 +58,7 @@ int code_Duplication(list[list[int]] filesinstr, int totalLinesOfCode) {
 							if (tempfstposition != -1) fstposition = fstposition+1+tempfstposition;
 							else fstposition=-1;
 						}
-						
-						if (fstposition!=-1 && fstposition < size(filesinstr)-1) {
-							
+						if (fstposition!=-1 && fstposition < size(fileone)-1) {
 							do { 
 								int temp = x;
 								int temp2 = fstposition;
@@ -149,13 +148,42 @@ int code_Duplication(list[list[int]] filesinstr, int totalLinesOfCode) {
 		//println("------------------------------------");
 		numberofduplicatedcode = numberofduplicatedcode + dup.y - dup.x + 1;
 	}
-	
-	makeGraph(tryit, locationsMethods);
+	if(!isEmpty(tryit)){
+		makeGraph(tryit, locationsMethods);
+	}
 
 	//render(hcat(b1,std(bottom())));
 	println(numberofduplicatedcode);
 	return numberofduplicatedcode;
 	
+}
+
+rel[loc, loc] relatedMethods(list[loc] sourceLocs, list[list[value]] sourceLines){
+	map[tuple[int, int], bool] mapping = ();
+	for(<i, xs> <- enumerate(sourceLines)){
+		for(<j, ys> <- enumerate(sourceLines[i+1..])){
+			if(i == j) continue;
+			key = <i, j>;
+			if(key in mapping) continue;
+			mapping[key] = compareLines(xs, ys);
+		} 
+	}
+	rs = {};
+	for(<i,j> <- mapping){
+		if(mapping[<i,j>]){
+			rs += <sourceLocs[i], sourceLocs[j]>;
+		}
+	} 
+	return rs;
+}
+
+bool compareLines(list[value] xs, list[value] ys){
+	for(x <- xs){
+		for(y <- ys){
+			if(x == y) return true;
+		}
+	}
+	return false;
 }
 
 private list[tuple[real,int]] addInAMap(f,x,y,list[tuple[real,int]] tryit) {
@@ -194,7 +222,6 @@ private void makeGraph (tryit,locationsMethods) {
 		fillColor("Red"))];
 		
 	for (tuple[real b,int a] t<-tryit) {
-		println(t.b);
 		b1 += box(vshrink(t.b /h.a),
 			mouseOver(text("<toInt(t.b)>")),
 			onMouseDown(bool (int butnr, map[KeyModifier,bool] modifiers) {

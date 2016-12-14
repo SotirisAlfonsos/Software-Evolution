@@ -19,17 +19,14 @@ list[list[str]] getSource(){
 }
 
 list[list[int]] getHashes(){
-	println ( size(sourceHashes));
 	return sourceHashes;
 }
 
 list[list[int]] getLinesOfCode(){
-	println ( size(linesOfCode));
 	return linesOfCode;
 }
 
 list[loc] getLocs(){
-	println ( size(sourceLocs));
 	return sourceLocs;
 }
 
@@ -89,9 +86,9 @@ int countLinesInMethod(tuple[loc mloc, loc floc] methodFile){
 	int lineN = 0;
 	list[int] lineNumber = [];
 	loc file = |project://<methodFile.floc.authority><methodFile.floc.path>|; 
-	println(fileModels<floc>);
+	loc method = file(methodFile.mloc.offset, methodFile.mloc.length);
 	M3 fileModel = fileModels[file];
-	str src = readFile(|project://<methodFile.mloc.authority><methodFile.mloc.path>|(methodFile.mloc.offset, methodFile.mloc.length)); 
+	str src = readFile(method);
 	for(commentLoc <- fileModel@documentation<comments>){
 		comment = readFile(commentLoc);
 		src = replaceFirst(src, comment, "");
@@ -114,6 +111,6 @@ int countLinesInMethod(tuple[loc mloc, loc floc] methodFile){
 	sourceHashes += [srcHashes];
 	linesOfCode += [lineNumber];
 	
-	sourceLocs += |file://<methodFile.mloc.path>|(methodFile.mloc.offset, methodFile.mloc.length);
+	sourceLocs += method;
 	return size(srcLines);
 }

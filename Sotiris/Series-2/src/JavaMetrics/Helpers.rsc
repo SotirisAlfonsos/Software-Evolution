@@ -38,3 +38,17 @@ public rel[loc, Declaration] getMethods(loc projectDir){
 	}
 	return methodLocs;
 }
+
+@doc{
+	.Synopsis
+	Returns a relation between the index and the items in a list.
+}
+public lrel[int index, value item] enumerate(list[value] xs){
+	int i = 0;
+	res = [];
+	for(x <- xs){
+		res += <i, x>;
+		i += 1;
+	}
+	return res;
+}
