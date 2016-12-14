@@ -4,9 +4,13 @@ import JavaMetrics::SourceTransformer;
 import lang::java::jdt::m3::Core;
 import Prelude;
 import util::Math;
+import Map;
 import JavaMetrics::Volume;
+import vis::Figure;
+import vis::Render;
+import vis::KeySym;
 
-int code_Duplication(list[list[int]] filesinstr) {
+int code_Duplication(list[list[int]] filesinstr, int totalLinesOfCode) {
 	list[loc] sourceLocs = getLocs();
 	list[tuple[int,int,int]] duplicatedparts = [];
 	int possibleDuplicate =0;
@@ -19,7 +23,9 @@ int code_Duplication(list[list[int]] filesinstr) {
 		print("<precision(toReal(i * 100) / sourceSize, 3)>%     \r");
 		list[int] fileone = filesinstr[i];
 		for (int x <- [0..size(fileone)]) { 
+			fstposition=-1;
 			if (size(fileone)-x<6) break;
+			
 			//else if ( /^\}$/ := fileone[x] || /^\{$/ := fileone[x] );
 			else {
 				list[int] bl = fileone[x .. x+6];
@@ -28,6 +34,20 @@ int code_Duplication(list[list[int]] filesinstr) {
 					
 					if (size(filetwo)<6) continue;
 					else if ([_*, bl, _*] := filetwo) {
+						//int posit =0;
+						/*for (firstint <- [0..size(filetwo)]) {
+							//println("<filetwo> \n <filetwo[firstint]>");
+							if (firstint<size(filetwo)-5) {
+								if (bl == filetwo[firstint..firstint+6]) { 
+									if (i==j && x==firstint);
+									else{
+										fstposition=firstint; 
+										break; 
+									}
+								}
+							}else break;
+							//posit += 6;
+						}*/
 						fstposition = indexOf(filetwo, fileone[x]);
 						if (i==j && x==fstposition){
 							int tempfstposition = indexOf(filetwo[(fstposition+1)..], fileone[x]);
@@ -76,6 +96,20 @@ int code_Duplication(list[list[int]] filesinstr) {
 									else duplicatedparts=duplicatedparts+<i,startstri,endstri>+<j,startstry,endstry>;
 								}
 								possibleDuplicate=0;
+								//int posit =fstposition+1;
+								/*for (firstint <- [fstposition+1..size(filetwo)]) {
+									//println("<filetwo> \n <filetwo[firstint]>");
+									if (firstint<size(filetwo)-5) {
+										if (bl == filetwo[firstint..firstint+6]) { 
+											if (i==j && x==firstint);
+											else{
+												fstposition=firstint; 
+												break; 
+											}
+										}
+									}else {fstposition=-1; break; }
+									//posit += 6;
+								}*/
 								
 								int tempfstposition = indexOf(filetwo[(fstposition+1)..], fileone[x]);
 								
@@ -94,20 +128,59 @@ int code_Duplication(list[list[int]] filesinstr) {
 			}
 		}
 	}
+	
 	int numberofduplicatedcode =0;
+	list[loc] locationsMethods = getLocs();
+	list[tuple[real,int]] tryit = [];
 	for (tuple[int f,int x,int y] dup<-duplicatedparts) {
 		//list[int] stri = filesinstr[dup.f];
 		//str meth = toString(sourceLocs[f]);
+		tryit = addInAMap(dup.f,dup.x,dup.y,tryit);
+		locationsMethods[dup.f];
+		println(dup.f);
 		
-		
-		println(sourceLocs[dup.f]);
-		//println("------------------------------------");
+			//onMouseEnter(void () { c = true; }), onMouseExit(void () { c = false ; }), fillColor("Red"));
+		//println(sourceLocs[dup.f]);
+		println("------------------------------------");
 		//for (i<-[dup.x..dup.y]) println(stri[i]);
 		//println("<dup.x> <dup.y>");
 		//println("------------------------------------");
 		numberofduplicatedcode = numberofduplicatedcode + dup.y - dup.x + 1;
 	}
-	 println(numberofduplicatedcode);
+	tuple[real a,int b] h=max(tryit);
+	tryit = tryit -h;
+	tryit = reverse(sort(tryit));
+	list[Figure] b1 =[box(vshrink(h.a/h.a),mouseOver(text("<toInt(h.a)>")), fillColor("Red"))];
+	for (tuple[real b,int a] t<-tryit) {
+		println(t.b);
+		b1 += box(vshrink(t.b /h.a),mouseOver(text("<toInt(t.b)>")),fillColor("Red"));
+		
+	}
+	b0 = box(hcat(b1,std(bottom())), fillColor("lightGray"));
+	render(b0);
+	
+	s = "";
+	s2 = "";
+	b = box(text(loc () { return s; }),
+	fillColor("red"),
+	onMouseDown(loc (int butnr, map[KeyModifier,bool] modifiers) {
+		s = "<locationsMethods[0]>";
+		return locationsMethods[0];
+	}));
+	render(b);
+	//render(hcat(b1,std(bottom())));
+	println(numberofduplicatedcode);
 	return numberofduplicatedcode;
 	
+}
+
+private list[tuple[real,int]] addInAMap(f,x,y,list[tuple[real,int]] tryit) {
+	for (tuple[real b,int a] t<-tryit) {
+		if (t.a==f) {
+			tryit=tryit-t;
+			tryit += <t.b+y-x+1.0,f>;
+			return tryit;
+		}
+	}
+	return (tryit+<y-x+1.0,f>);
 }
