@@ -4,6 +4,7 @@ import JavaMetrics::CyclomaticComplexity;
 import JavaMetrics::Duplication;
 import JavaMetrics::Volume;
 import JavaMetrics::SigMappings;
+import JavaMetrics::Helpers;
 
 import DateTime;
 import IO;
@@ -16,6 +17,7 @@ import util::Benchmark;
 import util::Math;
 
 void main(loc projectLoc){
+	loc projectDir = |"<projectLoc.scheme>://<projectLoc.path>"|;
 	num totalTime = userTime();
 	st = now();
 	println("Analysis started at: <printTime(st, "HH:mm:ss")> (UTC)");
@@ -34,17 +36,20 @@ void main(loc projectLoc){
 	println("(<precision(usertimeToMin(userTime() - analysis), 4)> minutes)");
 	println(" - Project SLoC: <totalLoc> lines");
 	
-	println();
-	println("Acquiring Cyclomatic Complexity per unit ");
-	analysis = userTime();
-	lrel[loc mloc, int complexity] unitCc = calculateUnitComplexity(project);
-	println("(<precision(usertimeToMin(userTime() - analysis), 4)> minutes)");
-	println(" - Largest unit complexity: <max(unitCc<complexity>)> paths");
+	//println();
+	//println("Acquiring Cyclomatic Complexity per unit ");
+	//analysis = userTime();
+	//lrel[loc mloc, int complexity] unitCc = calculateUnitComplexity(project);
+	//println("(<precision(usertimeToMin(userTime() - analysis), 4)> minutes)");
+	//println(" - Largest unit complexity: <max(unitCc<complexity>)> paths");
+	
+	
 	
 	println();
 	println("Acquiring SLoC per unit ");
 	analysis = userTime();
-	lrel[loc mloc, int size] unitLoc = countUnitLines(unitCc<mloc>);
+	methodLocations = getMethods(projectLoc);
+	lrel[loc mloc, int size] unitLoc = countUnitLines(methodLocations<location>);
 	println("(<precision(usertimeToMin(userTime() - analysis), 4)> minutes)");
 	println(" - Largest unit size: <max(unitLoc<size>)> lines");
 	

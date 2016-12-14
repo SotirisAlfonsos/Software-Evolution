@@ -2,6 +2,7 @@ module JavaMetrics::Volume
 
 import JavaMetrics::SourceTransformer;
 import JavaMetrics::Hashing;
+import JavaMetrics::Helpers;
 import lang::java::jdt::m3::Core;
 import IO;
 import Prelude;
@@ -26,8 +27,8 @@ list[loc] getLocs(){
 	return sourceLocs;
 }
 
-int countLinesInProject(M3 projectModel){
-	set[loc] fs = files(projectModel);
+int countLinesInProject(loc projectDir){
+	set[loc] fs = crawl(projectDir, "*.java");
 	list[str] lines = [];
 	int sourceSize = size(fs);
 	int i = 0;
