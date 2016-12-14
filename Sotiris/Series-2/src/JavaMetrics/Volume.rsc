@@ -10,6 +10,7 @@ import util::Math;
 // save method sources for code duplication analysis
 list[list[str]] totalSource = [];
 list[list[int]] sourceHashes = [];
+list[list[int]] linesOfCode = [];
 list[loc] sourceLocs = [];
 
 list[list[str]] getSource(){
@@ -19,6 +20,11 @@ list[list[str]] getSource(){
 list[list[int]] getHashes(){
 	println ( size(sourceHashes));
 	return sourceHashes;
+}
+
+list[list[int]] getLinesOfCode(){
+	println ( size(linesOfCode));
+	return linesOfCode;
 }
 
 list[loc] getLocs(){
@@ -51,6 +57,7 @@ lrel[loc location, int size] countUnitLines(list[loc] methodLocations){
 	totalSource = []; // empty aggregated source
 	sourceLocs = [];
 	sourceHashes = [];
+	linesOfCode = [];
 	lrel[loc, int] counts = [];
 	int sourceSize = size(fs);
 	int i = 0;
@@ -78,6 +85,8 @@ void generateFileModels(set[loc] methodLocations){
 }
 
 int countLinesInMethod(tuple[loc mloc, loc floc] methodFile){
+	int lineN =0;
+	list[int] lineNumber =[];
 	M3 fileModel = fileModels[|file://<methodFile.floc.path>|];
 	str src = readFile(|file://<methodFile.mloc.path>|(methodFile.mloc.offset, methodFile.mloc.length)); 
 	for(commentLoc <- fileModel@documentation<comments>){
@@ -93,11 +102,14 @@ int countLinesInMethod(tuple[loc mloc, loc floc] methodFile){
 	
 	list[int] srcHashes = [];
 	for(l <- srcLines){
+		lineN += 1;
 		if ( /^\}$/ := l || /^\{$/ := l ) continue;
 		srcHashes += hashSimple(l);
+		lineNumber += lineN;
 	}
 	//list[int] srcHashes = mapper(srcLines, hashSimple);
 	sourceHashes += [srcHashes];
+	linesOfCode += [lineNumber];
 	
 	sourceLocs += |file://<methodFile.mloc.path>|(methodFile.mloc.offset, methodFile.mloc.length);
 	return size(srcLines);

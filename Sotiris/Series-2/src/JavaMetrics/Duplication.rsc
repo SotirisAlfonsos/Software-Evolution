@@ -9,6 +9,8 @@ import JavaMetrics::Volume;
 import vis::Figure;
 import vis::Render;
 import vis::KeySym;
+import util::Editors;
+import Exception;
 
 int code_Duplication(list[list[int]] filesinstr, int totalLinesOfCode) {
 	list[loc] sourceLocs = getLocs();
@@ -136,38 +138,20 @@ int code_Duplication(list[list[int]] filesinstr, int totalLinesOfCode) {
 		//list[int] stri = filesinstr[dup.f];
 		//str meth = toString(sourceLocs[f]);
 		tryit = addInAMap(dup.f,dup.x,dup.y,tryit);
-		locationsMethods[dup.f];
-		println(dup.f);
+		//locationsMethods[dup.f];
+		//println(dup.f);
 		
 			//onMouseEnter(void () { c = true; }), onMouseExit(void () { c = false ; }), fillColor("Red"));
 		//println(sourceLocs[dup.f]);
-		println("------------------------------------");
+		//println("------------------------------------");
 		//for (i<-[dup.x..dup.y]) println(stri[i]);
 		//println("<dup.x> <dup.y>");
 		//println("------------------------------------");
 		numberofduplicatedcode = numberofduplicatedcode + dup.y - dup.x + 1;
 	}
-	tuple[real a,int b] h=max(tryit);
-	tryit = tryit -h;
-	tryit = reverse(sort(tryit));
-	list[Figure] b1 =[box(vshrink(h.a/h.a),mouseOver(text("<toInt(h.a)>")), fillColor("Red"))];
-	for (tuple[real b,int a] t<-tryit) {
-		println(t.b);
-		b1 += box(vshrink(t.b /h.a),mouseOver(text("<toInt(t.b)>")),fillColor("Red"));
-		
-	}
-	b0 = box(hcat(b1,std(bottom())), fillColor("lightGray"));
-	render(b0);
 	
-	s = "";
-	s2 = "";
-	b = box(text(loc () { return s; }),
-	fillColor("red"),
-	onMouseDown(loc (int butnr, map[KeyModifier,bool] modifiers) {
-		s = "<locationsMethods[0]>";
-		return locationsMethods[0];
-	}));
-	render(b);
+	makeGraph(tryit, locationsMethods);
+
 	//render(hcat(b1,std(bottom())));
 	println(numberofduplicatedcode);
 	return numberofduplicatedcode;
@@ -183,4 +167,43 @@ private list[tuple[real,int]] addInAMap(f,x,y,list[tuple[real,int]] tryit) {
 		}
 	}
 	return (tryit+<y-x+1.0,f>);
+}
+
+private void myEdit(file,msg) {
+	list[LineDecoration] ld = [];
+	try (file.begin)
+		ld = [info(l, msg) | l <- [file.begin.line..file.end.line+1]];
+	catch UnavailableInformation() : 
+		ld = [info(1, msg)];
+		
+	edit(file, ld);
+		
+}
+
+private void makeGraph (tryit,locationsMethods) {
+	tuple[real a,int b] h=max(tryit);
+	tryit = tryit -h;
+	tryit = reverse(sort(tryit));
+	
+	list[Figure] b1 =[box(vshrink(h.a/h.a),
+		mouseOver(text("<toInt(h.a)>")), 
+		onMouseDown(bool (int butnr, map[KeyModifier,bool] modifiers) {
+			myEdit(locationsMethods[h.b],"hi");
+			return true;
+		}),
+		fillColor("Red"))];
+		
+	for (tuple[real b,int a] t<-tryit) {
+		println(t.b);
+		b1 += box(vshrink(t.b /h.a),
+			mouseOver(text("<toInt(t.b)>")),
+			onMouseDown(bool (int butnr, map[KeyModifier,bool] modifiers) {
+				myEdit(locationsMethods[t.a],"hi");
+				return true;
+			}),
+			fillColor("Red"));
+		
+	}
+	b0 = box(hcat(b1,std(bottom())), fillColor("lightGray"));
+	render(b0);
 }
