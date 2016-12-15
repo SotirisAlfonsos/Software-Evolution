@@ -1,7 +1,7 @@
 module JavaMetrics::Duplication
 
 import JavaMetrics::SourceTransformer;
-import lang::java::jdt::m3::Core;
+import lang::java::jdt::m3::AST;
 import Prelude;
 import util::Math;
 import Map;
@@ -12,14 +12,16 @@ import vis::Render;
 import vis::KeySym;
 import Exception;
 
-int code_Duplication(list[list[int]] filesinstr, int totalLinesOfCode) {
+int code_Duplication(list[list[int]] filesinstr, int totalLinesOfCode, list[str] methodNames) {
 	list[loc] sourceLocs = getLocs();
 	list[tuple[int,int,int]] duplicatedparts = [];
-	int possibleDuplicate =0;
-	int duplication=0;
-	int fstposition=-1;
-	int lstposition=-1;
+	int possibleDuplicate = 0;
+	int duplication = 0;
+	int fstposition = -1;
+	int lstposition = -1;
 	int sourceSize = size(filesinstr);
+	
+	rel[int, int] relatedMethods = {};
 	 
 	for (int i <- [0..sourceSize]) {
 		print("<precision(toReal(i * 100) / sourceSize, 3)>%     \r");
@@ -91,6 +93,7 @@ int code_Duplication(list[list[int]] filesinstr, int totalLinesOfCode) {
 							duplicatedparts = duplicatedparts + <i, startstri, endstri> + <j, startstry, endstry>;
 						}
 						
+						relatedMethods += <i, j>;
 					}
 					possibleDuplicate = 0;
 					
@@ -112,14 +115,16 @@ int code_Duplication(list[list[int]] filesinstr, int totalLinesOfCode) {
 	}
 	
 	int numberofduplicatedcode =0;
-	list[loc] locationsMethods = getLocs();
 	list[tuple[real,int]] tryit = [];
 	for (tuple[int f,int x,int y] dup<-duplicatedparts) {
 		tryit = addInAMap(dup.f,dup.x,dup.y,tryit);
 		numberofduplicatedcode = numberofduplicatedcode + dup.y - dup.x + 1;
 	}
 	if(!isEmpty(tryit)){
-		makeGraph(tryit, locationsMethods);
+		makeBarGraph(tryit, sourceLocs);
+	}
+	if(!isEmpty(tryit)){
+		makeRelationGraph(relatedMethods, sourceLocs, methodNames);
 	}
 	return numberofduplicatedcode;
 	
@@ -136,7 +141,7 @@ private list[tuple[real,int]] addInAMap(f,x,y,list[tuple[real,int]] tryit) {
 	return (tryit+<y-x+1.0,f>);
 }
 
-private void makeGraph (tryit,locationsMethods) {
+private void makeBarGraph (tryit,locationsMethods) {
 	tuple[real a,int b] h=max(tryit);
 	tryit = tryit -h;
 	tryit = reverse(sort(tryit));
@@ -162,30 +167,42 @@ private void makeGraph (tryit,locationsMethods) {
 	render(b0);
 }
 
-rel[loc, loc] relatedMethods(list[loc] sourceLocs, list[list[value]] sourceLines){
-	map[tuple[int, int], bool] mapping = ();
-	for(<i, xs> <- enumerate(sourceLines)){
-		for(<j, ys> <- enumerate(sourceLines[i+1..])){
-			if(i == j) continue;
-			key = <i, j>;
-			if(key in mapping) continue;
-			mapping[key] = compareLines(xs, ys);
-		} 
-	}
-	rs = {};
-	for(<i,j> <- mapping){
-		if(mapping[<i,j>]){
-			rs += <sourceLocs[i], sourceLocs[j]>;
+private void makeRelationGraph(rel[int x, int y] methodIndex, list[loc] methodLocs, list[str] methodNames){
+	set[int] seenNodes = {};
+	list[Figure] nodes = [];
+	list[Edge] edges = [];
+	for(<x, y> <- methodIndex){
+		idX = toString(x);
+		idY = toString(y);
+		if(!(x in seenNodes)){
+			str name = methodNames[x];
+			loc methodLoc = methodLocs[x];
+			nodes += box(
+				text(name),
+				id(idX),
+				onMouseDown(bool (int butnr, map[KeyModifier,bool] modifiers) {
+					edit(methodLoc);
+					return true;
+				}), 
+				fillColor("lightGray")
+			);
+			seenNodes += x;
 		}
-	} 
-	return rs;
-}
-
-bool compareLines(list[value] xs, list[value] ys){
-	for(x <- xs){
-		for(y <- ys){
-			if(x == y) return true;
+		if(!(y in seenNodes)){
+			str name = methodNames[y];
+			loc methodLoc = methodLocs[x];
+			nodes += box(
+				text(name),
+				id(idY),
+				onMouseDown(bool (int butnr, map[KeyModifier,bool] modifiers) {
+					edit(methodLoc);
+					return true;
+				}), 
+				fillColor("lightGray")
+			);
+			seenNodes += y;
 		}
+		edges += edge(idX, idY);
 	}
-	return false;
+	render(graph(nodes, edges, hint("layered"), gap(50)));
 }

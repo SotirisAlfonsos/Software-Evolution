@@ -13,6 +13,7 @@ list[list[str]] totalSource = [];
 list[list[int]] sourceHashes = [];
 list[list[int]] linesOfCode = [];
 list[loc] sourceLocs = [];
+list[loc] methodAsts = [];
 
 list[list[str]] getSource(){
 	return totalSource;
@@ -49,7 +50,7 @@ list[str] countLinesInFile(loc file){
 	return pureSrc;
 }
 
-lrel[loc location, int size] countUnitLines(set[loc] methodLocations){
+lrel[loc location, int size] countUnitLines(list[loc] methodLocations){
 	rel[loc mloc, loc floc] fs = { <l, |<l.scheme>://<l.authority><l.path>|> | l <- methodLocations };
 	generateFileModels(fs<floc>);
 	totalSource = []; // empty aggregated source
