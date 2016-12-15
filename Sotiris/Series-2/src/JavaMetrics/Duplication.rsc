@@ -13,7 +13,7 @@ import vis::KeySym;
 import Exception;
 
 int code_Duplication(list[list[int]] filesinstr, int totalLinesOfCode, list[str] methodNames) {
-	list[loc] sourceLocs = getLocs();
+	list[loc] methodLocs = getLocs();
 	list[tuple[int,int,int]] duplicatedparts = [];
 	int possibleDuplicate = 0;
 	int duplication = 0;
@@ -115,16 +115,13 @@ int code_Duplication(list[list[int]] filesinstr, int totalLinesOfCode, list[str]
 	}
 	
 	int numberofduplicatedcode =0;
-	list[int] actualFileLineLoc = [];
-	list[loc] locationsMethods = getLocs();
 	list[loc] newLocs = [];
 	list[tuple[real,int,loc]] dupLines = [];
 	list[tuple[real,int,loc]] tryit = [];
 	for (tuple[int f,int x,int y] dup<-duplicatedparts) {
-		actualFileLineLoc = getActualLines (dup.f, dup.x, dup.y);
-		println(actualFileLineLoc);
-		dupLines += <dup.y - dup.x + 1.0, dup.f, locationsMethods[dup.f](actualFileLineLoc[2],actualFileLineLoc[3])>;
-		//locationsMethods[dup.f](actualFileLineLoc[2],actualFileLineLoc[3]);
+		loc blockLocation = getActualLines (dup.f, dup.x, dup.y);
+		dupLines += <dup.y - dup.x + 1.0, dup.f, blockLocation>;
+		//methodLocs[dup.f](actualFileLineLoc[2],actualFileLineLoc[3]);
 		//tryit = addInAMap(dup.f, dup.x, dup.y, tryit, l );
 		numberofduplicatedcode = numberofduplicatedcode + dup.y - dup.x + 1;
 	}
@@ -132,7 +129,7 @@ int code_Duplication(list[list[int]] filesinstr, int totalLinesOfCode, list[str]
 		makeBarGraph(dupLines);
 	}
 	if(!isEmpty(dupLines)){
-		makeRelationGraph(relatedMethods, sourceLocs, methodNames);
+		makeRelationGraph(relatedMethods, methodLocs, methodNames);
 	}
 	return numberofduplicatedcode;
 	
@@ -180,20 +177,18 @@ private void makeRelationGraph(rel[int x, int y] methodIndex, list[loc] methodLo
 	list[Figure] nodes = [];
 	list[Edge] edges = [];
 	for(<x, y> <- methodIndex){
-		idX = toString(x);
-		idY = toString(y);
+		str idX = toString(x);
+		str idY = toString(y);
 		if(!(x in seenNodes)){
 			str name = methodNames[x];
 			loc methodLoc = methodLocs[x];
 			nodes += box(
 				text(name),
-				id(idX),
+				id(idX), 
 				onMouseDown(bool (int butnr, map[KeyModifier,bool] modifiers) {
-					edit(methodLoc);
+					edit(location);
 					return true;
-				}), 
-				fillColor("lightGray")
-			);
+				}), fillColor("lightGray"));
 			seenNodes += x;
 		}
 		if(!(y in seenNodes)){
@@ -201,33 +196,33 @@ private void makeRelationGraph(rel[int x, int y] methodIndex, list[loc] methodLo
 			loc methodLoc = methodLocs[y];
 			nodes += box(
 				text(name),
-				id(idY),
+				id(idY), 
 				onMouseDown(bool (int butnr, map[KeyModifier,bool] modifiers) {
-					edit(methodLoc);
+					edit(location);
 					return true;
-				}), 
-				fillColor("lightGray")
-			);
+				}), fillColor("lightGray"));
 			seenNodes += y;
 		}
-		edges += edge(idX, idY);
+		edges += edge(idX, idY, lineWidth(1));
 	}
+	println(nodes);
 	render("Relation graph", graph(nodes, edges, hint("layered"), gap(50)));
 }
 
-private list[int] getActualLines (fileNumber, startline, endline) {
+private loc getActualLines (fileNumber, startline, endline) {
 	list[str] duplLines = []; 
 	
 	list[list[str]] storedLines = getSource();
 	list[loc] locationLines = getLocs();
 	duplLines = storedLines[fileNumber];
-	list[str] actualLines = readFileLines(locationLines[fileNumber]);
+	
+	loc methodLocation = locationLines[fileNumber];
+	list[str] actualLines = readFileLines(methodLocation);
 
-	int actStart =0;
-	int actEnd =0;
-	int counter =startline;
-	int i =0;
-	//do {
+	int actStart = 0;
+	int actEnd = 0;
+	int counter = startline;
+	int i = 0;
 	for (actLines<-actualLines) {
 			
 
@@ -251,20 +246,17 @@ private list[int] getActualLines (fileNumber, startline, endline) {
 			}
 		i += 1;
 	}
-	int charsBeforeBlock =0;
-	int charsWithBlock =0;
-	int j =0;
+	int charsBeforeBlock = methodLocation.offset;
+	int charsWithBlock = 0;
+	int j = 0;
 	for (charcount <- actualLines) {
-		if (j<actStart) {
-			println(size(charcount));
-			charsBeforeBlock += size(charcount);
-			charsWithBlock += size(charcount);
-		} else if(j<actEnd) {
-			charsWithBlock += size(charcount);
+		if (j < actStart) {
+			charsBeforeBlock += size(charcount) + 1;
+		} else if(j < actEnd) {
+			charsWithBlock += size(charcount) + 1;
 			
 		}else break;
 		j += 1;
 	}
-	//}while(counter==size(dupLines));
-	return [actStart, actEnd, charsBeforeBlock, charsWithBlock-charsBeforeBlock];
+	return methodLocation(charsBeforeBlock, charsWithBlock);
 }

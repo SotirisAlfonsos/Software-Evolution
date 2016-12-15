@@ -66,3 +66,7 @@ public void edit(loc file,str msg="") {
 		ld = [info(1, msg)];
 	edit(file, ld); // calls the Java method in util::Editors
 }
+
+public loc methodToFile(loc m){
+	return |<m.scheme>://<m.authority><m.path>|;
+}
