@@ -164,7 +164,7 @@ private void makeBarGraph (tryit,locationsMethods) {
 		
 	}
 	b0 = box(hcat(b1,std(bottom())), fillColor("lightGray"));
-	render(b0);
+	render("Duplication count per method", b0);
 }
 
 private void makeRelationGraph(rel[int x, int y] methodIndex, list[loc] methodLocs, list[str] methodNames){
@@ -190,7 +190,7 @@ private void makeRelationGraph(rel[int x, int y] methodIndex, list[loc] methodLo
 		}
 		if(!(y in seenNodes)){
 			str name = methodNames[y];
-			loc methodLoc = methodLocs[x];
+			loc methodLoc = methodLocs[y];
 			nodes += box(
 				text(name),
 				id(idY),
@@ -204,5 +204,5 @@ private void makeRelationGraph(rel[int x, int y] methodIndex, list[loc] methodLo
 		}
 		edges += edge(idX, idY);
 	}
-	render(graph(nodes, edges, hint("layered"), gap(50)));
+	render("Relation graph", graph(nodes, edges, hint("layered"), gap(50)));
 }

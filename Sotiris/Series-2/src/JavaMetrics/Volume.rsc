@@ -51,7 +51,7 @@ list[str] countLinesInFile(loc file){
 }
 
 lrel[loc location, int size] countUnitLines(list[loc] methodLocations){
-	rel[loc mloc, loc floc] fs = { <l, |<l.scheme>://<l.authority><l.path>|> | l <- methodLocations };
+	lrel[loc mloc, loc floc] fs = [ <l, |<l.scheme>://<l.authority><l.path>|> | l <- methodLocations ];
 	generateFileModels(fs<floc>);
 	totalSource = []; // empty aggregated source
 	sourceLocs = [];
@@ -69,8 +69,8 @@ lrel[loc location, int size] countUnitLines(list[loc] methodLocations){
 }
 
 map[loc floc, M3 model] fileModels = ();
-void generateFileModels(set[loc] methodLocations){
-	set[loc] fileLocations = {|project://<l.authority><l.path>| | l <- methodLocations};
+void generateFileModels(list[loc] methodLocations){
+	list[loc] fileLocations = [|project://<l.authority><l.path>| | l <- methodLocations];
 	int sourceSize = size(fileLocations);
 	int i = 0;
 	for(floc <- fileLocations){
