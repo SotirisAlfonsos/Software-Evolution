@@ -19,111 +19,94 @@ int code_Duplication(list[list[int]] filesinstr, int totalLinesOfCode) {
 	int duplication=0;
 	int fstposition=-1;
 	int lstposition=-1;
-	//filesinstr = mapper(removeSimpleLines, filesinstr);
-	int sourceSize = size(filesinstr); 
+	int sourceSize = size(filesinstr);
+	 
 	for (int i <- [0..sourceSize]) {
 		print("<precision(toReal(i * 100) / sourceSize, 3)>%     \r");
 		list[int] fileone = filesinstr[i];
 		for (int x <- [0..size(fileone)]) { 
-			fstposition=-1;
-			if (size(fileone)-x<6) break;
-			//else if ( /^\}$/ := fileone[x] || /^\{$/ := fileone[x] );
-			else {
-				list[int] bl = fileone[x .. x+6];
-				for (int j <- [i..size(filesinstr)]) {
-					list[int] filetwo = filesinstr[j];
-					
-					if (size(filetwo)<6) continue;
-					else if ([_*, bl, _*] := filetwo) {
-						//int posit =0;
-						/*for (firstint <- [0..size(filetwo)]) {
-							//println("<filetwo> \n <filetwo[firstint]>");
-							if (firstint<size(filetwo)-5) {
-								if (bl == filetwo[firstint..firstint+6]) { 
-									if (i==j && x==firstint);
-									else{
-										fstposition=firstint; 
-										break; 
-									}
-								}
-							}else break;
-							//posit += 6;
-						}*/
-						fstposition = indexOf(filetwo, fileone[x]);
-						if (i==j && x==fstposition){
-							int tempfstposition = indexOf(filetwo[(fstposition+1)..], fileone[x]);
-									
-							if (tempfstposition != -1) fstposition = fstposition+1+tempfstposition;
-							else fstposition=-1;
-						}
-						if (fstposition!=-1 && fstposition < size(fileone)-1) {
-							do { 
-								int temp = x;
-								int temp2 = fstposition;
-								
-								int startstri=x;
-								int endstri=0;
-								int startstry=fstposition;
-								int endstry=0;
-								
-								while (fileone[temp] == filetwo[temp2]) {
-									//println("<fileone[temp]> <i> / <size(filesinstr)>");
-									//println("<i> / <size(filesinstr)>");
-									temp=temp+1;
-									temp2=temp2+1;
-									
-									possibleDuplicate=possibleDuplicate+1;
-									
-									endstri=temp-1;
-									endstry=temp2-1;
-									
-									if (temp==size(fileone) || temp2==size(filetwo)) break;
-									
-								}
-								
-								int flagDup=0;
-								int flagDup2=0;
-								if (possibleDuplicate >= 6) {
-									for (tuple[int f,int xi,int yi] dup<-duplicatedparts) {
-										if (startstri>=dup.xi && endstri<=dup.yi && dup.f==i) flagDup=1;
-										else if (startstry>=dup.xi && endstry<=dup.yi && dup.f==j) flagDup2=1;
-										
-									}
-									if (flagDup==1 && flagDup2==1);
-									else if (flagDup==1) duplicatedparts=duplicatedparts+<j,startstry,endstry>;
-									else if (flagDup2==1) duplicatedparts=duplicatedparts+<i,startstri,endstri>;
-									else duplicatedparts=duplicatedparts+<i,startstri,endstri>+<j,startstry,endstry>;
-								}
-								possibleDuplicate=0;
-								//int posit =fstposition+1;
-								/*for (firstint <- [fstposition+1..size(filetwo)]) {
-									//println("<filetwo> \n <filetwo[firstint]>");
-									if (firstint<size(filetwo)-5) {
-										if (bl == filetwo[firstint..firstint+6]) { 
-											if (i==j && x==firstint);
-											else{
-												fstposition=firstint; 
-												break; 
-											}
-										}
-									}else {fstposition=-1; break; }
-									//posit += 6;
-								}*/
-								
-								int tempfstposition = indexOf(filetwo[(fstposition+1)..], fileone[x]);
-								
-								if (tempfstposition != -1) fstposition = fstposition+1+tempfstposition;
-								else fstposition=-1;
-								if (i==j && x==fstposition){
-									int tempfstposition = indexOf(filetwo[(fstposition+1)..], fileone[x]);
-											
-									if (tempfstposition != -1) fstposition = fstposition+1+tempfstposition;
-									else fstposition=-1;
-								}
-							}while (fstposition != -1 && fstposition < size(filesinstr)-1);
-						}
-					}
+			if (size(fileone) - x < 6){
+				break;
+			}
+			
+			fstposition = -1;
+			list[int] bl = fileone[x .. x+6];
+			for (int j <- [i..size(filesinstr)]) {
+				list[int] filetwo = filesinstr[j];
+				if (size(filetwo) < 6 || [_*, bl, _*] !:= filetwo){
+					continue;
 				}
+				// position of line x in file two
+				fstposition = indexOf(filetwo, fileone[x]);
+				// if the matching line is the line itself (same file)
+				if (i == j && x == fstposition){
+					// search the rest of the file for a match
+					int tempfstposition = indexOf(filetwo[(fstposition + 1)..], fileone[x]);
+
+					if (tempfstposition == -1) fstposition = -1;
+					else fstposition = fstposition + 1 + tempfstposition;
+				}
+				if (fstposition == -1 || fstposition >= size(fileone) - 1) {
+					// if match position is invalid, search for match in next file
+					continue;
+				}
+				do { 
+					int temp = x; // position of matching line in fileone
+					int temp2 = fstposition; // position of matching line in filetwo
+					
+					int startstri = x;
+					int startstry = fstposition;
+					
+					// find whole matching block
+					while (
+					 temp < size(fileone)
+					 && temp2 < size(filetwo)
+					 && fileone[temp] == filetwo[temp2] 
+					) {
+						temp  = temp + 1;
+						temp2 = temp2 + 1;
+											
+						possibleDuplicate = possibleDuplicate + 1;
+					}
+					int endstri = temp - 1;
+					int endstry = temp2 - 1;
+					
+					// check if duplicates were found before
+					// otherwise add them
+					bool flagPrevDup = false;
+					bool flagPrevDup2 = false;
+					if (possibleDuplicate >= 6) {
+						for (tuple[int f, int xi, int yi] dup <- duplicatedparts) {
+							flagPrevDup  = flagPrevDup  || (startstri >= dup.xi && endstri <= dup.yi && dup.f == i);
+							flagPrevDup2 = flagPrevDup2 || (startstry >= dup.xi && endstry <= dup.yi && dup.f == j);
+						}
+						if (flagPrevDup && flagPrevDup2);
+						else if (flagPrevDup){
+							duplicatedparts = duplicatedparts + <j, startstry, endstry>;
+						}
+						else if (flagPrevDup2){
+							duplicatedparts = duplicatedparts + <i, startstri, endstri>;
+						}
+						else{
+							duplicatedparts = duplicatedparts + <i, startstri, endstri> + <j, startstry, endstry>;
+						}
+						
+					}
+					possibleDuplicate = 0;
+					
+					// find next match between files
+					int tempfstposition = indexOf(filetwo[(fstposition+1)..], fileone[x]);
+					
+					if (tempfstposition != -1) fstposition = fstposition + 1 + tempfstposition;
+					else fstposition=-1;
+					
+					if (i == j && x == fstposition){
+						int tempfstposition = indexOf(filetwo[(fstposition+1)..], fileone[x]);
+								
+						if (tempfstposition == -1) fstposition = -1;
+						else fstposition = fstposition + 1 + tempfstposition;
+					}
+				}while (fstposition != -1 && fstposition < size(filesinstr) - 1);
 			}
 		}
 	}
@@ -132,56 +115,14 @@ int code_Duplication(list[list[int]] filesinstr, int totalLinesOfCode) {
 	list[loc] locationsMethods = getLocs();
 	list[tuple[real,int]] tryit = [];
 	for (tuple[int f,int x,int y] dup<-duplicatedparts) {
-		//list[int] stri = filesinstr[dup.f];
-		//str meth = toString(sourceLocs[f]);
 		tryit = addInAMap(dup.f,dup.x,dup.y,tryit);
-		//locationsMethods[dup.f];
-		//println(dup.f);
-		
-			//onMouseEnter(void () { c = true; }), onMouseExit(void () { c = false ; }), fillColor("Red"));
-		//println(sourceLocs[dup.f]);
-		//println("------------------------------------");
-		//for (i<-[dup.x..dup.y]) println(stri[i]);
-		//println("<dup.x> <dup.y>");
-		//println("------------------------------------");
 		numberofduplicatedcode = numberofduplicatedcode + dup.y - dup.x + 1;
 	}
 	if(!isEmpty(tryit)){
 		makeGraph(tryit, locationsMethods);
 	}
-
-	//render(hcat(b1,std(bottom())));
-	println(numberofduplicatedcode);
 	return numberofduplicatedcode;
 	
-}
-
-rel[loc, loc] relatedMethods(list[loc] sourceLocs, list[list[value]] sourceLines){
-	map[tuple[int, int], bool] mapping = ();
-	for(<i, xs> <- enumerate(sourceLines)){
-		for(<j, ys> <- enumerate(sourceLines[i+1..])){
-			if(i == j) continue;
-			key = <i, j>;
-			if(key in mapping) continue;
-			mapping[key] = compareLines(xs, ys);
-		} 
-	}
-	rs = {};
-	for(<i,j> <- mapping){
-		if(mapping[<i,j>]){
-			rs += <sourceLocs[i], sourceLocs[j]>;
-		}
-	} 
-	return rs;
-}
-
-bool compareLines(list[value] xs, list[value] ys){
-	for(x <- xs){
-		for(y <- ys){
-			if(x == y) return true;
-		}
-	}
-	return false;
 }
 
 private list[tuple[real,int]] addInAMap(f,x,y,list[tuple[real,int]] tryit) {
@@ -219,4 +160,32 @@ private void makeGraph (tryit,locationsMethods) {
 	}
 	b0 = box(hcat(b1,std(bottom())), fillColor("lightGray"));
 	render(b0);
+}
+
+rel[loc, loc] relatedMethods(list[loc] sourceLocs, list[list[value]] sourceLines){
+	map[tuple[int, int], bool] mapping = ();
+	for(<i, xs> <- enumerate(sourceLines)){
+		for(<j, ys> <- enumerate(sourceLines[i+1..])){
+			if(i == j) continue;
+			key = <i, j>;
+			if(key in mapping) continue;
+			mapping[key] = compareLines(xs, ys);
+		} 
+	}
+	rs = {};
+	for(<i,j> <- mapping){
+		if(mapping[<i,j>]){
+			rs += <sourceLocs[i], sourceLocs[j]>;
+		}
+	} 
+	return rs;
+}
+
+bool compareLines(list[value] xs, list[value] ys){
+	for(x <- xs){
+		for(y <- ys){
+			if(x == y) return true;
+		}
+	}
+	return false;
 }
