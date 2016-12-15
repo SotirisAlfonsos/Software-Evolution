@@ -205,7 +205,6 @@ private void makeRelationGraph(rel[int x, int y] methodIndex, list[loc] methodLo
 		}
 		edges += edge(idX, idY, lineWidth(1));
 	}
-	println(nodes);
 	render("Relation graph", graph(nodes, edges, hint("layered"), gap(50)));
 }
 
@@ -222,40 +221,38 @@ private loc getActualLines (fileNumber, startline, endline) {
 	int actStart = 0;
 	int actEnd = 0;
 	int counter = startline;
-	int i = 0;
-	for (actLines<-actualLines) {
-			
 
-			str testi = escape(duplLines[counter], ("{": "", "}": ""));
-			//println("<testi>   <actLines>");
-			if ( /.*<testi>.*/ := actLines) {
-				//println("<i> hi");
-				if (counter == 0) actStart = i;
-				else if (counter == endline) { actEnd = i; break;}
-				counter += 1;
-				//break;
-			}else if (counter>0) {
-				for (dLines <- duplLines[counter+1..size(duplLines)]) {
-					//println("<dLines>   <actLines>");
-					dLines = escape(dLines, ("{": "", "}": ""));
-					if (/.*<dLines>.*/ := actLines) {
-						counter=startline;
-						break;
-					}
+	for (<i, actLines> <- enumerate(actualLines)) {
+		str testi = escape(duplLines[counter], ("{": "", "}": ""));
+		//println("<testi>   <actLines>");
+		if ( /.*<testi>.*/ := actLines) {
+			//println("<i> hi");
+			if (counter == startline) actStart = i;
+			else if (counter == endline) { actEnd = i; break;}
+			counter += 1;
+			//break;
+		}else if (counter>0) {
+			for (dLines <- duplLines[counter+1..size(duplLines)]) {
+				//println("<dLines>   <actLines>");
+				dLines = escape(dLines, ("{": "", "}": ""));
+				if (/.*<dLines>.*/ := actLines) {
+					counter=startline;
+					break;
 				}
 			}
-		i += 1;
+		}
 	}
 	int charsBeforeBlock = methodLocation.offset;
 	int charsWithBlock = 0;
 	int j = 0;
 	for (charcount <- actualLines) {
 		if (j < actStart) {
-			charsBeforeBlock += size(charcount) + 1;
+			println(charcount);
+			charsBeforeBlock += size(charcount) + 2;
 		} else if(j < actEnd) {
-			charsWithBlock += size(charcount) + 1;
+			charsWithBlock += size(charcount) + 2;
 			
-		}else break;
+		} else break;
 		j += 1;
 	}
 	return methodLocation(charsBeforeBlock, charsWithBlock);
