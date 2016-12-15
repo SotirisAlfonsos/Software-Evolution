@@ -125,6 +125,7 @@ int code_Duplication(list[list[int]] filesinstr, int totalLinesOfCode, list[str]
 		//tryit = addInAMap(dup.f, dup.x, dup.y, tryit, l );
 		numberofduplicatedcode = numberofduplicatedcode + dup.y - dup.x + 1;
 	}
+	//println(duplicatedparts);
 	if(!isEmpty(dupLines)){
 		makeBarGraph(dupLines);
 	}
@@ -180,7 +181,7 @@ private void makeRelationGraph(rel[int x, int y] methodIndex, list[loc] methodLo
 				text(name),
 				id(idX), 
 				onMouseDown(bool (int butnr, map[KeyModifier,bool] modifiers) {
-					edit(location);
+					edit(methodLoc);
 					return true;
 				}), fillColor("lightGray"));
 			seenNodes += x;
@@ -192,7 +193,7 @@ private void makeRelationGraph(rel[int x, int y] methodIndex, list[loc] methodLo
 				text(name),
 				id(idY), 
 				onMouseDown(bool (int butnr, map[KeyModifier,bool] modifiers) {
-					edit(location);
+					edit(methodLoc);
 					return true;
 				}), fillColor("lightGray"));
 			seenNodes += y;
@@ -216,7 +217,7 @@ private loc getActualLines (fileNumber, startline, endline) {
 	int actEnd = 0;
 	int counter = startline;
 
-	for (<i, actLines> <- enumerate(actualLines)) {
+	for (<i, actLines> <- enumerate(actualLines[startline..],i=startline)) {
 		str testi = escape(duplLines[counter], ("{": "", "}": ""));
 		//println("<testi>   <actLines>");
 		if ( /.*<testi>.*/ := actLines) {
@@ -241,9 +242,9 @@ private loc getActualLines (fileNumber, startline, endline) {
 	int j = 0;
 	for (charcount <- actualLines) {
 		if (j < actStart) {
-			println(charcount);
+			//println(charcount);
 			charsBeforeBlock += size(charcount) + 2;
-		} else if(j < actEnd) {
+		} else if(j <= actEnd) {
 			charsWithBlock += size(charcount) + 2;
 			
 		} else break;
