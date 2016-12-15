@@ -112,47 +112,54 @@ int code_Duplication(list[list[int]] filesinstr, int totalLinesOfCode) {
 	}
 	
 	int numberofduplicatedcode =0;
+	list[int] actualFileLineLoc = [];
 	list[loc] locationsMethods = getLocs();
-	list[tuple[real,int]] tryit = [];
+	list[loc] newLocs = [];
+	list[tuple[real,int,loc]] dupLines = [];
+	list[tuple[real,int,loc]] tryit = [];
 	for (tuple[int f,int x,int y] dup<-duplicatedparts) {
-		tryit = addInAMap(dup.f,dup.x,dup.y,tryit);
+		actualFileLineLoc = getActualLines (dup.f, dup.x, dup.y);
+		println(actualFileLineLoc);
+		dupLines += <dup.y - dup.x + 1.0, dup.f, locationsMethods[dup.f](actualFileLineLoc[2],actualFileLineLoc[3])>;
+		//locationsMethods[dup.f](actualFileLineLoc[2],actualFileLineLoc[3]);
+		//tryit = addInAMap(dup.f, dup.x, dup.y, tryit, l );
 		numberofduplicatedcode = numberofduplicatedcode + dup.y - dup.x + 1;
 	}
-	if(!isEmpty(tryit)){
-		makeGraph(tryit, locationsMethods);
+	if(!isEmpty(dupLines)){
+		makeGraph(dupLines);
 	}
 	return numberofduplicatedcode;
 	
 }
 
-private list[tuple[real,int]] addInAMap(f,x,y,list[tuple[real,int]] tryit) {
-	for (tuple[real b,int a] t<-tryit) {
+private list[tuple[real,int,loc]] addInAMap(f,x,y,list[tuple[real,int,loc]] tryit, loc locationRefact) {
+	for (tuple[real b,int a, loc _] t<-tryit) {
 		if (t.a==f) {
 			tryit=tryit-t;
-			tryit += <t.b+y-x+1.0,f>;
+			tryit += <t.b+y-x+1.0,f,locationRefact>;
 			return tryit;
 		}
 	}
-	return (tryit+<y-x+1.0,f>);
+	return (tryit+<y-x+1.0, f, locationRefact>);
 }
 
-private void makeGraph (tryit,locationsMethods) {
-	tuple[real a,int b] h=max(tryit);
-	tryit = tryit -h;
-	tryit = reverse(sort(tryit));
+private void makeGraph (dupLines) {
+	tuple[real a,int b, loc locRef] h=max(dupLines);
+	dupLines = dupLines -h;
+	dupLines = reverse(sort(dupLines));
 	list[Figure] b1 =[box(vshrink(h.a/h.a),
 		mouseOver(text("<toInt(h.a)>")), 
 		onMouseDown(bool (int butnr, map[KeyModifier,bool] modifiers) {
-			edit(locationsMethods[h.b]);
+			edit(h.locRef);
 			return true;
 		}),
 		fillColor("Red"))];
-		
-	for (tuple[real b,int a] t<-tryit) {
+	int counter = 1;
+	for (tuple[real b,int a,loc locRef] t<-dupLines) {
 		b1 += box(vshrink(t.b /h.a),
 			mouseOver(text("<toInt(t.b)>")),
 			onMouseDown(bool (int butnr, map[KeyModifier,bool] modifiers) {
-				edit(locationsMethods[t.a]);
+				edit(t.locRef);
 				return true;
 			}),
 			fillColor("Red"));
@@ -188,4 +195,58 @@ bool compareLines(list[value] xs, list[value] ys){
 		}
 	}
 	return false;
+}
+
+private list[int] getActualLines (fileNumber, startline, endline) {
+	list[str] duplLines = []; 
+	
+	list[list[str]] storedLines = getSource();
+	list[loc] locationLines = getLocs();
+	duplLines = storedLines[fileNumber];
+	list[str] actualLines = readFileLines(locationLines[fileNumber]);
+
+	int actStart =0;
+	int actEnd =0;
+	int counter =startline;
+	int i =0;
+	//do {
+	for (actLines<-actualLines) {
+			
+
+			str testi = escape(duplLines[counter], ("{": "", "}": ""));
+			//println("<testi>   <actLines>");
+			if ( /.*<testi>.*/ := actLines) {
+				//println("<i> hi");
+				if (counter == 0) actStart = i;
+				else if (counter == endline) { actEnd = i; break;}
+				counter += 1;
+				//break;
+			}else if (counter>0) {
+				for (dLines <- duplLines[counter+1..size(duplLines)]) {
+					//println("<dLines>   <actLines>");
+					dLines = escape(dLines, ("{": "", "}": ""));
+					if (/.*<dLines>.*/ := actLines) {
+						counter=startline;
+						break;
+					}
+				}
+			}
+		i += 1;
+	}
+	int charsBeforeBlock =0;
+	int charsWithBlock =0;
+	int j =0;
+	for (charcount <- actualLines) {
+		if (j<actStart) {
+			println(size(charcount));
+			charsBeforeBlock += size(charcount);
+			charsWithBlock += size(charcount);
+		} else if(j<actEnd) {
+			charsWithBlock += size(charcount);
+			
+		}else break;
+		j += 1;
+	}
+	//}while(counter==size(dupLines));
+	return [actStart, actEnd, charsBeforeBlock, charsWithBlock-charsBeforeBlock];
 }

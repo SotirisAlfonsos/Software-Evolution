@@ -98,18 +98,21 @@ int countLinesInMethod(tuple[loc mloc, loc floc] methodFile){
 	//}
 	list[str] srcLines = filterBlankLines(splitLines(src));
 	srcLines = mapper(srcLines, trim);
-	totalSource += [srcLines];
+	//srcLines = removeSimpleLines(srcLines);
 	
+	list[str] srcL = [];
 	list[int] srcHashes = [];
 	for(l <- srcLines){
 		lineN += 1;
 		if ( /^\}$/ := l || /^\{$/ := l ) continue;
+		srcL += l; 
 		srcHashes += hashSimple(l);
 		lineNumber += lineN;
 	}
 	//list[int] srcHashes = mapper(srcLines, hashSimple);
 	sourceHashes += [srcHashes];
 	linesOfCode += [lineNumber];
+	totalSource += [srcL];
 	
 	sourceLocs += method;
 	return size(srcLines);
