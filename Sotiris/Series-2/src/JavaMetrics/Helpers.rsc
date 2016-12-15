@@ -26,15 +26,15 @@ public list[loc] crawl(loc dir, str suffix){
 	.Synopsis
 	Get all the names (str), locations (loc) and ASTs (Declaration) of java methods in a directory.
 }
-public rel[loc, Declaration] getMethods(loc projectDir){
-	rel[loc, Declaration] methodLocs = {};
+public list[tuple[loc, Declaration, str]] getMethods(loc projectDir){
+	list[tuple[loc, Declaration, str]] methodLocs = [];
 	
 	for(f <- crawl(projectDir, ".java")){
 		classAst = createAstFromFile(f, false);
 		visit(classAst){
-			 case x:\method(_,str name,_,_): methodLocs +=      <x@src, x>;
-			 case x:\method(_,str name,_,_,_): methodLocs +=    <x@src, x>;
-			 case x:\constructor(str name,_,_,_): methodLocs += <x@src, x>;
+			 case x:\method(_,str name,_,_): methodLocs +=      <x@src, x, name>;
+			 case x:\method(_,str name,_,_,_): methodLocs +=    <x@src, x, name>;
+			 case x:\constructor(str name,_,_,_): methodLocs += <x@src, x, name>;
 		}
 	}
 	return methodLocs;

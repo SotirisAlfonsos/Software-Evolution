@@ -33,7 +33,7 @@ void main(loc projectDir){
 	
 	println("Creating method ASTs");
 	analysis = userTime();
-	rel[loc location, Declaration ast] projectMethods = getMethods(projectDir);
+	lrel[loc location, Declaration ast, str name] projectMethods = getMethods(projectDir);
 	println("(<precision(usertimeToMin(userTime() - analysis), 4)> minutes)");
 	
 	println();
@@ -46,7 +46,7 @@ void main(loc projectDir){
 	println();
 	println("Acquiring duplicates... ");
 	analysis = userTime();
-	int dupCount = code_Duplication(getHashes(),totalLoc);
+	int dupCount = code_Duplication(getHashes(),totalLoc, projectMethods<name>);
 	println("(<precision(usertimeToMin(userTime() - analysis), 4)> minutes)");
 	int size1 = 0;
 	println(dupCount);
