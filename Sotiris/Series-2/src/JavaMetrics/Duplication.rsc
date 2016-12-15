@@ -10,7 +10,6 @@ import JavaMetrics::Helpers;
 import vis::Figure;
 import vis::Render;
 import vis::KeySym;
-import util::Editors;
 import Exception;
 
 int code_Duplication(list[list[int]] filesinstr, int totalLinesOfCode) {
@@ -28,7 +27,6 @@ int code_Duplication(list[list[int]] filesinstr, int totalLinesOfCode) {
 		for (int x <- [0..size(fileone)]) { 
 			fstposition=-1;
 			if (size(fileone)-x<6) break;
-			
 			//else if ( /^\}$/ := fileone[x] || /^\{$/ := fileone[x] );
 			else {
 				list[int] bl = fileone[x .. x+6];
@@ -197,26 +195,14 @@ private list[tuple[real,int]] addInAMap(f,x,y,list[tuple[real,int]] tryit) {
 	return (tryit+<y-x+1.0,f>);
 }
 
-private void myEdit(file,msg) {
-	list[LineDecoration] ld = [];
-	try (file.begin)
-		ld = [info(l, msg) | l <- [file.begin.line..file.end.line+1]];
-	catch UnavailableInformation() : 
-		ld = [info(1, msg)];
-		
-	edit(file, ld);
-		
-}
-
 private void makeGraph (tryit,locationsMethods) {
 	tuple[real a,int b] h=max(tryit);
 	tryit = tryit -h;
 	tryit = reverse(sort(tryit));
-	
 	list[Figure] b1 =[box(vshrink(h.a/h.a),
 		mouseOver(text("<toInt(h.a)>")), 
 		onMouseDown(bool (int butnr, map[KeyModifier,bool] modifiers) {
-			myEdit(locationsMethods[h.b],"hi");
+			edit(locationsMethods[h.b]);
 			return true;
 		}),
 		fillColor("Red"))];
@@ -225,7 +211,7 @@ private void makeGraph (tryit,locationsMethods) {
 		b1 += box(vshrink(t.b /h.a),
 			mouseOver(text("<toInt(t.b)>")),
 			onMouseDown(bool (int butnr, map[KeyModifier,bool] modifiers) {
-				myEdit(locationsMethods[t.a],"hi");
+				edit(locationsMethods[t.a]);
 				return true;
 			}),
 			fillColor("Red"));

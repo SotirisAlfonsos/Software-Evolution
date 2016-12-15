@@ -4,6 +4,7 @@ import IO;
 import String;
 
 import lang::java::jdt::m3::AST;
+import util::Editors;
 
 // Taken from of "demo::common::Crawl" 
 public list[loc] crawl(loc dir, str suffix){
@@ -51,4 +52,17 @@ public lrel[int index, value item] enumerate(list[value] xs){
 		i += 1;
 	}
 	return res;
+}
+
+@doc {
+	.Synopsis
+	Quick bug fix for the util::Editors::edit function in Rascal 0.8
+}
+public void edit(loc file,str msg="") {
+	list[LineDecoration] ld = [];
+	try (file.begin)
+		ld = [info(l, msg) | l <- [file.begin.line..file.end.line+1]];
+	catch UnavailableInformation() :
+		ld = [info(1, msg)];
+	edit(file, ld); // calls the Java method in util::Editors
 }
