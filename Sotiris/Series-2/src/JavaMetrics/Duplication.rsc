@@ -148,21 +148,15 @@ private list[tuple[real,int,loc]] addInAMap(f,x,y,list[tuple[real,int,loc]] tryi
 
 private void makeBarGraph (dupLines) {
 	tuple[real a,int b, loc locRef] h=max(dupLines);
-	dupLines = dupLines -h;
 	dupLines = reverse(sort(dupLines));
-	list[Figure] b1 =[box(vshrink(h.a/h.a),
-		mouseOver(text("<toInt(h.a)>")), 
-		onMouseDown(bool (int butnr, map[KeyModifier,bool] modifiers) {
-			edit(h.locRef);
-			return true;
-		}),
-		fillColor("Red"))];
-	int counter = 1;
+	b1 = [];
+	int counter = 0;
 	for (tuple[real b,int a,loc locRef] t<-dupLines) {
+		loc location = t.locRef;
 		b1 += box(vshrink(t.b /h.a),
 			mouseOver(text("<toInt(t.b)>")),
 			onMouseDown(bool (int butnr, map[KeyModifier,bool] modifiers) {
-				edit(t.locRef);
+				edit(location);
 				return true;
 			}),
 			fillColor("Red"));
