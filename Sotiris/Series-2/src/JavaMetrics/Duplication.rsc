@@ -48,7 +48,7 @@ int code_Duplication(list[list[int]] filesinstr, int totalLinesOfCode, list[str]
 					if (tempfstposition == -1) fstposition = -1;
 					else fstposition = fstposition + 1 + tempfstposition;
 				}
-				if (fstposition == -1 || fstposition >= size(fileone) - 1) {
+				if (fstposition == -1 || fstposition > size(filetwo) - 6) {
 					// if match position is invalid, search for match in next file
 					continue;
 				}
@@ -109,7 +109,7 @@ int code_Duplication(list[list[int]] filesinstr, int totalLinesOfCode, list[str]
 						if (tempfstposition == -1) fstposition = -1;
 						else fstposition = fstposition + 1 + tempfstposition;
 					}
-				}while (fstposition != -1 && fstposition < size(filesinstr) - 1);
+				}while (fstposition != -1 && fstposition <= size(filetwo) - 6);
 			}
 		}
 	}
