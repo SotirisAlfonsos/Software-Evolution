@@ -237,6 +237,8 @@ private Figure createHeatmapLegend(int mapSize = 50){
 	}
 	return vcat(boxes, left());
 }
+
+// Colour mapping algorithm  "borrowed" from: http://stackoverflow.com/a/20792531
 private Color calculateColor(num minimum, num maximum, num val){
 	<mini, maxi> = <minimum + 0.0, maximum + 0.0>;
 	ratio = 2 * (val - mini) / (maxi - mini);
