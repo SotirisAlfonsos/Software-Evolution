@@ -49,9 +49,9 @@ void main(loc projectDir){
 	int dupCount = code_Duplication(getHashes(),totalLoc, projectMethods<name>);
 	println("(<precision(usertimeToMin(userTime() - analysis), 4)> minutes)");
 	int size1 = 0;
-	println(dupCount);
 	for (so <- getSource()) size1 = size1 + size(so);
 	println(" - Duplication: <precision(toReal(dupCount * 100)/size1, 2)>%");
+	println("Total elapsed time: (<precision(usertimeToMin(userTime() - totalTime), 4)> minutes)");
 }
 
 real usertimeToMin(num ut){

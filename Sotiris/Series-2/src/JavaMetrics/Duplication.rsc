@@ -114,23 +114,25 @@ int code_Duplication(list[list[int]] filesinstr, int totalLinesOfCode, list[str]
 		}
 	}
 	
-	int numberofduplicatedcode =0;
-	list[loc] newLocs = [];
+	int numberofduplicatedcode = 0;
+	map[int, int] methodCounts = ();
+	int maxCount = 0;
 	list[tuple[real,int,loc]] dupLines = [];
 	list[tuple[real,int,loc]] tryit = [];
-	for (tuple[int f,int x,int y] dup<-duplicatedparts) {
-		loc blockLocation = getActualLines (dup.f, dup.x, dup.y);
-		dupLines += <dup.y - dup.x + 1.0, dup.f, blockLocation>;
-		//methodLocs[dup.f](actualFileLineLoc[2],actualFileLineLoc[3]);
-		//tryit = addInAMap(dup.f, dup.x, dup.y, tryit, l );
-		numberofduplicatedcode = numberofduplicatedcode + dup.y - dup.x + 1;
+	for (tuple[int fileNumber,int beginLine,int endLine] dup<-duplicatedparts) {
+		loc blockLocation = getActualLines (dup.fileNumber, dup.beginLine, dup.endLine);
+		methodCounts[dup.fileNumber] = dup.endLine - dup.beginLine + 1;
+		dupLines += <methodCounts[dup.fileNumber] + 0.0, dup.fileNumber, blockLocation>;
+		numberofduplicatedcode = numberofduplicatedcode + methodCounts[dup.fileNumber];
+		
+		if(methodCounts[dup.fileNumber] > maxCount) maxCount = methodCounts[dup.fileNumber];
 	}
-	//println(duplicatedparts);
+	println("Rendering graphs...");
 	if(!isEmpty(dupLines)){
 		makeBarGraph(dupLines);
 	}
 	if(!isEmpty(dupLines)){
-		makeRelationGraph(relatedMethods, methodLocs, methodNames);
+		makeRelationGraph(relatedMethods, methodLocs, methodNames, methodCounts, maxCount);
 	}
 	return numberofduplicatedcode;
 	
@@ -148,26 +150,32 @@ private list[tuple[real,int,loc]] addInAMap(f,x,y,list[tuple[real,int,loc]] tryi
 }
 
 private void makeBarGraph (dupLines) {
-	tuple[real a,int b, loc locRef] h=max(dupLines);
+	tuple[real size, int fileNumber, loc locRef] biggest = max(dupLines);
 	dupLines = reverse(sort(dupLines));
 	b1 = [];
 	int counter = 0;
-	for (tuple[real b,int a,loc locRef] t<-dupLines) {
-		loc location = t.locRef;
-		b1 += box(vshrink(t.b /h.a),
-			mouseOver(text("<toInt(t.b)>")),
+	for (<dupSize, file, locRef> <- dupLines) {
+		loc location = locRef;
+		b1 += box(
+			// shrink relative to max size
+			vshrink(dupSize / biggest.size),
+			//set min-height to 15
+			hsize(15),
+			// show size on hover
+			mouseOver(text("<toInt(dupSize)>")),
+			// goto location on click
 			onMouseDown(bool (int butnr, map[KeyModifier,bool] modifiers) {
 				edit(location);
 				return true;
 			}),
-			fillColor("Red"));
-		
+			fillColor("red")
+		);
 	}
-	b0 = box(hcat(b1,std(bottom())), fillColor("lightGray"));
-	render("Duplication count per method", b0);
+	Figure chart = box(hcat(b1, std(bottom())), fillColor("lightGray"));
+	render("Duplication count per method", chart);
 }
 
-private void makeRelationGraph(rel[int x, int y] methodIndex, list[loc] methodLocs, list[str] methodNames){
+private void makeRelationGraph(rel[int x, int y] methodIndex, list[loc] methodLocs, list[str] methodNames, map[int, int] methodCounts, int maxCount){
 	set[int] seenNodes = {};
 	list[Figure] nodes = [];
 	list[Edge] edges = [];
@@ -177,30 +185,65 @@ private void makeRelationGraph(rel[int x, int y] methodIndex, list[loc] methodLo
 		if(!(x in seenNodes)){
 			str name = methodNames[x];
 			loc methodLoc = methodLocs[x];
+			int cloneSize = methodCounts[x];
+			Color c = calculateColor(0, maxCount, cloneSize);
 			nodes += box(
-				text(name),
+				text(name, fontColor("white")),
 				id(idX), 
 				onMouseDown(bool (int butnr, map[KeyModifier,bool] modifiers) {
 					edit(methodLoc);
 					return true;
-				}), fillColor("lightGray"));
+				}), 
+				fillColor(c)
+				);
 			seenNodes += x;
 		}
 		if(!(y in seenNodes)){
 			str name = methodNames[y];
 			loc methodLoc = methodLocs[y];
+			int cloneSize = methodCounts[y];
+			Color c = calculateColor(0, maxCount, cloneSize); 
 			nodes += box(
-				text(name),
+				text(name, fontColor("white")),
 				id(idY), 
 				onMouseDown(bool (int butnr, map[KeyModifier,bool] modifiers) {
 					edit(methodLoc);
 					return true;
-				}), fillColor("lightGray"));
+				}),
+				fillColor(c)
+				);
 			seenNodes += y;
 		}
-		edges += edge(idX, idY, lineWidth(1));
+		edges += edge(idX, idY);
 	}
-	render("Relation graph", graph(nodes, edges, hint("layered"), gap(50)));
+	Figure legend = createHeatmapLegend();
+	Figure graph  = graph(nodes, edges, hint("layered"), gap(15));
+	Figure graphWithLegend = hcat([legend, graph], gap(25));
+	render("Relation graph", graphWithLegend);
+	renderSave(graphWithLegend, |project://Series-2/output/relationGraph.png|);
+}
+
+private Figure createHeatmapLegend(int mapSize = 50){
+	list[Figure] boxes = [];
+	FProperty boxSize = size(10, 3);
+	for(i <- [mapSize..-1]){
+		Color c = calculateColor(0, mapSize, i);
+		Figure b = box(
+			fillColor(c),
+			lineColor(c),
+			boxSize
+		);
+		boxes += b;
+	}
+	return vcat(boxes, left());
+}
+private Color calculateColor(num minimum, num maximum, num val){
+	<mini, maxi> = <minimum + 0.0, maximum + 0.0>;
+	ratio = 2 * (val - mini) / (maxi - mini);
+	int red   = toInt(max([0, 255 * (ratio - 1)]));
+	int blue  = toInt(max([0, 255 * (1 - ratio)]));
+	int green = 255 - blue - red;
+	return rgb(red, green, blue); 
 }
 
 private loc getActualLines (fileNumber, startline, endline) {
@@ -217,18 +260,14 @@ private loc getActualLines (fileNumber, startline, endline) {
 	int actEnd = 0;
 	int counter = startline;
 
-	for (<i, actLines> <- enumerate(actualLines[startline..],i=startline)) {
+	for (<i, actLines> <- enumerate(actualLines[startline..], i=startline)) {
 		str testi = escape(duplLines[counter], ("{": "", "}": ""));
-		//println("<testi>   <actLines>");
 		if ( /.*<testi>.*/ := actLines) {
-			//println("<i> hi");
 			if (counter == startline) actStart = i;
 			else if (counter == endline) { actEnd = i; break;}
 			counter += 1;
-			//break;
-		}else if (counter>0) {
+		}else if (counter > 0) {
 			for (dLines <- duplLines[counter+1..size(duplLines)]) {
-				//println("<dLines>   <actLines>");
 				dLines = escape(dLines, ("{": "", "}": ""));
 				if (/.*<dLines>.*/ := actLines) {
 					counter=startline;
@@ -239,16 +278,16 @@ private loc getActualLines (fileNumber, startline, endline) {
 	}
 	int charsBeforeBlock = methodLocation.offset;
 	int charsWithBlock = 0;
-	int j = 0;
-	for (charcount <- actualLines) {
+	for (<j, line> <- enumerate(actualLines)) {
 		if (j < actStart) {
-			//println(charcount);
-			charsBeforeBlock += size(charcount) + 2;
+			// + 2 for \r\n
+			charsBeforeBlock += size(line) + 2; 
 		} else if(j <= actEnd) {
-			charsWithBlock += size(charcount) + 2;
-			
-		} else break;
-		j += 1;
+			// + 2 for \r\n
+			charsWithBlock += size(line) + 2;
+		} else{
+			break;
+		}
 	}
 	return methodLocation(charsBeforeBlock, charsWithBlock);
 }
