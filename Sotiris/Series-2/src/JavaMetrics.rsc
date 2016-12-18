@@ -50,6 +50,7 @@ void main(loc projectDir){
 	println("(<precision(usertimeToMin(userTime() - analysis), 4)> minutes)");
 	int size1 = 0;
 	for (so <- getSource()) size1 = size1 + size(so);
+	println(" - Lines of Duplication: <dupCount>");
 	println(" - Duplication: <precision(toReal(dupCount * 100)/size1, 2)>%");
 	println("Total elapsed time: (<precision(usertimeToMin(userTime() - totalTime), 4)> minutes)");
 }

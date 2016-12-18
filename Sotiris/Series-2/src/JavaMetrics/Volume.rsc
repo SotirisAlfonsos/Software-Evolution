@@ -7,6 +7,7 @@ import lang::java::jdt::m3::Core;
 import IO;
 import Prelude;
 import util::Math;
+import String;
 
 // save method sources for code duplication analysis
 list[list[str]] totalSource = [];
@@ -103,11 +104,16 @@ int countLinesInMethod(tuple[loc mloc, loc floc] methodFile){
 	
 	list[str] srcL = [];
 	list[int] srcHashes = [];
+	str lHash = "";
 	for(l <- srcLines){
+		lHash = l;
 		lineN += 1;
+		
+		
 		if ( /^\}$/ := l || /^\{$/ := l ) continue;
 		srcL += l; 
-		srcHashes += hashSimple(l);
+		lHash = replaceAll(lHash, " ", "");
+		srcHashes += hashSimple(lHash);
 		lineNumber += lineN;
 	}
 	//list[int] srcHashes = mapper(srcLines, hashSimple);
