@@ -1,9 +1,7 @@
 module JavaMetrics
 
-import JavaMetrics::CyclomaticComplexity;
 import JavaMetrics::Duplication;
 import JavaMetrics::Volume;
-import JavaMetrics::SigMappings;
 import JavaMetrics::Helpers;
 
 import DateTime;
